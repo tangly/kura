@@ -2,6 +2,11 @@
 
 A Flutter project to manage your medications at home.
 
+## Features
+
+- **Medication Expiration Notifications**: Get notified when your medications are about to expire. You will receive notifications 30, 15, 7, 3, and 1 day before the expiration date.
+- **Visual Indicators**: Medications that are about to expire (≤ 7 days) are highlighted in yellow, and expired medications are highlighted in red.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

@@ -17,25 +17,31 @@ class MedicationAdapter extends TypeAdapter<Medication> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Medication(
-      name: fields[0] as String,
-      user: fields[1] as String,
-      reason: fields[2] as String,
+      id: fields[0] as int?,
+      name: fields[1] as String,
+      dosage: fields[2] as String?,
       expirationDate: fields[3] as DateTime,
+      user: fields[4] as User?,
+      reason: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Medication obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
-      ..write(obj.name)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.user)
+      ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.reason)
+      ..write(obj.dosage)
       ..writeByte(3)
-      ..write(obj.expirationDate);
+      ..write(obj.expirationDate)
+      ..writeByte(4)
+      ..write(obj.user)
+      ..writeByte(5)
+      ..write(obj.reason);
   }
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:kura/src/models/medication.dart';
 import 'package:kura/src/services/medication_service.dart';
+import 'package:kura/src/services/medication_service_impl.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
@@ -9,66 +10,71 @@ import 'medication_service_test.mocks.dart';
 
 @GenerateMocks([HiveInterface, Box])
 void main() {
-  group('MedicationService', () {
-    late MedicationService medicationService;
-    late MockHiveInterface mockHiveInterface;
-    late MockBox mockBox;
+  late MedicationService medicationService;
+  late MockHiveInterface mockHive;
+  late MockBox<Medication> mockBox;
 
-    setUp(() {
-      mockHiveInterface = MockHiveInterface();
-      mockBox = MockBox();
-      medicationService = MedicationService(hive: mockHiveInterface);
-    });
+  setUp(() {
+    mockHive = MockHiveInterface();
+    mockBox = MockBox<Medication>();
+    medicationService = MedicationServiceImpl(hive: mockHive);
+  });
 
-    test('addMedication', () async {
-      when(mockHiveInterface.openBox(any)).thenAnswer((_) async => mockBox);
-      when(mockBox.add(any)).thenAnswer((_) async => 0);
+  final medication = Medication(
+    id: 1,
+    name: 'Aspirin',
+    dosage: '100mg',
+    expirationDate: DateTime.now(),
+  );
 
-      await medicationService.addMedication(
-        Medication(
-          name: 'test',
-          user: 'test',
-          reason: 'test',
-          expirationDate: DateTime.now(),
-        ),
-      );
+  test('init should open the medications box', () async {
+    when(mockHive.openBox<Medication>(any)).thenAnswer((_) async => mockBox);
 
-      verify(mockBox.add(any)).called(1);
-    });
+    await medicationService.init();
 
-    test('getMedications', () async {
-      when(mockHiveInterface.openBox(any)).thenAnswer((_) async => mockBox);
-      when(mockBox.values).thenReturn([]);
+    verify(mockHive.openBox<Medication>('medications'));
+  });
 
-      final result = await medicationService.getMedications();
+  test('addMedication should add a medication to the box', () async {
+    when(mockHive.openBox<Medication>(any)).thenAnswer((_) async => mockBox);
+    await medicationService.init();
+    when(mockBox.add(any)).thenAnswer((_) async => 1);
 
-      expect(result, []);
-    });
+    await medicationService.addMedication(medication);
 
-    test('updateMedication', () async {
-      when(mockHiveInterface.openBox(any)).thenAnswer((_) async => mockBox);
-      when(mockBox.putAt(any, any)).thenAnswer((_) async => {});
+    verify(mockBox.add(medication));
+  });
 
-      await medicationService.updateMedication(
-        0,
-        Medication(
-          name: 'test',
-          user: 'test',
-          reason: 'test',
-          expirationDate: DateTime.now(),
-        ),
-      );
+  test(
+    'getMedications should return a list of medications from the box',
+    () async {
+      when(mockHive.openBox<Medication>(any)).thenAnswer((_) async => mockBox);
+      await medicationService.init();
+      when(mockBox.values).thenReturn([medication]);
 
-      verify(mockBox.putAt(any, any)).called(1);
-    });
+      final medications = await medicationService.getMedications();
 
-    test('deleteMedication', () async {
-      when(mockHiveInterface.openBox(any)).thenAnswer((_) async => mockBox);
-      when(mockBox.deleteAt(any)).thenAnswer((_) async => {});
+      expect(medications, [medication]);
+    },
+  );
 
-      await medicationService.deleteMedication(0);
+  test('updateMedication should update a medication in the box', () async {
+    when(mockHive.openBox<Medication>(any)).thenAnswer((_) async => mockBox);
+    await medicationService.init();
+    when(mockBox.put(any, any)).thenAnswer((_) async => Future.value());
 
-      verify(mockBox.deleteAt(any)).called(1);
-    });
+    await medicationService.updateMedication(medication);
+
+    verify(mockBox.put(medication.id, medication));
+  });
+
+  test('deleteMedication should delete a medication from the box', () async {
+    when(mockHive.openBox<Medication>(any)).thenAnswer((_) async => mockBox);
+    await medicationService.init();
+    when(mockBox.delete(any)).thenAnswer((_) async => Future.value());
+
+    await medicationService.deleteMedication(medication.id!);
+
+    verify(mockBox.delete(medication.id));
   });
 }

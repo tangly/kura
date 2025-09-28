@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-import 'package:collection/collection.dart';
-import '../models/medication.dart';
-import '../providers.dart';
-import './add_edit_medication_screen.dart';
+import 'package:kura/src/models/medication.dart';
+import 'package:kura/src/models/user.dart';
+import 'package:kura/src/providers.dart';
+import 'package:kura/src/views/add_edit_medication_screen.dart';
+import 'package:kura/src/widgets/medication_list_item.dart';
 
 class MedicationListScreen extends ConsumerWidget {
   const MedicationListScreen({super.key});
@@ -14,60 +14,41 @@ class MedicationListScreen extends ConsumerWidget {
     final medicationList = ref.watch(medicationListProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Medication Manager'),
-      ),
+      appBar: AppBar(title: const Text('Medications')),
       body: medicationList.when(
         data: (medications) {
-          if (medications.isEmpty) {
-            return const Center(
-              child: Text('No medications found'),
-            );
+          final groupedMedications = <User?, List<Medication>>{};
+          for (final medication in medications) {
+            (groupedMedications[medication.user] ??= []).add(medication);
           }
-          final groupedMedications = groupBy(medications, (Medication m) => m.user);
 
-          return Semantics(
-            label: 'List of medications',
+          final userGroups = groupedMedications.keys.toList()
+            ..sort((a, b) => (a?.name ?? '').compareTo(b?.name ?? ''));
+
+          return RefreshIndicator(
+            onRefresh: () => ref.refresh(medicationListProvider.future),
             child: ListView.builder(
-              itemCount: groupedMedications.length,
+              itemCount: userGroups.length,
               itemBuilder: (context, index) {
-                final user = groupedMedications.keys.elementAt(index);
+                final user = userGroups[index];
                 final userMedications = groupedMedications[user]!;
-                userMedications.sort((a, b) => a.expirationDate.compareTo(b.expirationDate));
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        user,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: userMedications.length,
-                      itemBuilder: (context, index) {
-                        final medication = userMedications[index];
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddEditMedicationScreen(medication: medication),
-                              ),
-                            );
-                          },
-                          child: ListTile(
-                            title: Text(medication.name),
-                            subtitle: Text('Reason: ${medication.reason}\nExpires: ${DateFormat.yMd().format(medication.expirationDate)}'),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                return ExpansionTile(
+                  title: Text(user?.name ?? 'For the whole family'),
+                  initiallyExpanded: true,
+                  children: userMedications
+                      .map((medication) => InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AddEditMedicationScreen(medication: medication),
+                                ),
+                              );
+                            },
+                            child: MedicationListItem(medication: medication),
+                          ))
+                      .toList(),
                 );
               },
             ),
@@ -78,9 +59,10 @@ class MedicationListScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddEditMedicationScreen()),
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const AddEditMedicationScreen(),
+            ),
           );
         },
         child: const Icon(Icons.add),
