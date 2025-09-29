@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:kura/src/models/medication.dart';
 
 class MedicationListItem extends StatelessWidget {

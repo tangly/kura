@@ -11,7 +11,7 @@ class NotificationServiceImpl extends NotificationService {
   @override
   Future<void> init() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings();
     const InitializationSettings initializationSettings =
@@ -20,6 +20,14 @@ class NotificationServiceImpl extends NotificationService {
           iOS: initializationSettingsIOS,
         );
     await notificationsPlugin.initialize(initializationSettings);
+
+    final androidImplementation =
+        notificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    if (androidImplementation != null) {
+      await androidImplementation.requestNotificationsPermission();
+    }
+
     tz.initializeTimeZones();
   }
 
