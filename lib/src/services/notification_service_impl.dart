@@ -1,3 +1,4 @@
+import 'package:kura/src/models/medication.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kura/src/services/notification_service.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -64,6 +65,23 @@ class NotificationServiceImpl extends NotificationService {
     final notificationDays = [30, 15, 7, 3, 1];
     for (final days in notificationDays) {
       await cancelNotification(medicationId * 100 + days);
+    }
+  }
+
+  @override
+  Future<void> scheduleNotificationsForMedication(Medication medication) async {
+    await cancelAllNotificationsForMedication(medication.id!);
+    final notificationDays = [30, 15, 7, 3, 1];
+    for (final days in notificationDays) {
+      final scheduledDate = medication.expirationDate.subtract(Duration(days: days));
+      if (scheduledDate.isAfter(DateTime.now())) {
+        await scheduleNotification(
+          id: medication.id! * 100 + days,
+          title: 'Medication Expiration',
+          body: '${medication.name} will expire in $days days.',
+          scheduledDate: scheduledDate,
+        );
+      }
     }
   }
 }

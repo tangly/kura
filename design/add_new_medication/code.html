@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add Medication</title>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#1193d4",
+            "background-light": "#f6f7f8",
+            "background-dark": "#101c22",
+            "text-light": "#111827",
+            "text-dark": "#f3f4f6",
+            "subtle-light": "#e5e7eb",
+            "subtle-dark": "#374151",
+            "placeholder-light": "#9ca3af",
+            "placeholder-dark": "#9ca3af"
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "0.75rem",
+            "xl": "1rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .form-select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.5rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex flex-col h-screen justify-between">
+<div class="p-4">
+<header class="flex items-center justify-between mb-8">
+<button class="p-2 rounded-full text-text-light dark:text-text-dark">
+<span class="material-symbols-outlined">close</span>
+</button>
+<h1 class="text-xl font-bold text-text-light dark:text-text-dark">Add Medication</h1>
+<div class="w-10"></div>
+</header>
+<main class="space-y-6">
+<div class="flex flex-col">
+<label class="text-sm font-medium text-text-light/80 dark:text-text-dark/80 mb-2" for="medication-name">Medication Name</label>
+<input class="w-full bg-subtle-light dark:bg-subtle-dark border-none rounded-lg text-text-light dark:text-text-dark placeholder:text-placeholder-light dark:placeholder:text-placeholder-dark focus:ring-2 focus:ring-primary h-14 px-4" id="medication-name" placeholder="e.g., Ibuprofen" type="text"/>
+</div>
+<div class="flex flex-col">
+<label class="text-sm font-medium text-text-light/80 dark:text-text-dark/80 mb-2" for="dosage">Dosage</label>
+<input class="w-full bg-subtle-light dark:bg-subtle-dark border-none rounded-lg text-text-light dark:text-text-dark placeholder:text-placeholder-light dark:placeholder:text-placeholder-dark focus:ring-2 focus:ring-primary h-14 px-4" id="dosage" placeholder="e.g., 2 pills, 200mg, 1 spray" type="text"/>
+</div>
+<div class="flex flex-col">
+<label class="text-sm font-medium text-text-light/80 dark:text-text-dark/80 mb-2" for="user">For</label>
+<select class="form-select appearance-none w-full bg-subtle-light dark:bg-subtle-dark border-none rounded-lg text-text-light dark:text-text-dark focus:ring-2 focus:ring-primary h-14 px-4" id="user">
+<option>Select Family Member</option>
+<option>James</option>
+<option>Laura</option>
+</select>
+</div>
+<div class="flex flex-col">
+<label class="text-sm font-medium text-text-light/80 dark:text-text-dark/80 mb-2" for="reason">Reason for Use</label>
+<input class="w-full bg-subtle-light dark:bg-subtle-dark border-none rounded-lg text-text-light dark:text-text-dark placeholder:text-placeholder-light dark:placeholder:text-placeholder-dark focus:ring-2 focus:ring-primary h-14 px-4" id="reason" placeholder="e.g., Headache" type="text"/>
+</div>
+<div class="flex flex-col">
+<label class="text-sm font-medium text-text-light/80 dark:text-text-dark/80 mb-2" for="expiration">Expiration Date</label>
+<input class="w-full bg-subtle-light dark:bg-subtle-dark border-none rounded-lg text-text-light dark:text-text-dark placeholder:text-placeholder-light dark:placeholder:text-placeholder-dark focus:ring-2 focus:ring-primary h-14 px-4" id="expiration" type="date"/>
+</div>
+</main>
+</div>
+<footer class="p-4 pb-8">
+<button class="w-full bg-primary text-white font-bold py-4 rounded-lg hover:bg-primary/90 transition-colors">
+      Add Medication
+    </button>
+</footer>
+</div>
+
+</body></html>

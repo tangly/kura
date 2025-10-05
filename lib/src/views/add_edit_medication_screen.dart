@@ -21,6 +21,7 @@ class _AddEditMedicationScreenState
   late final TextEditingController _nameController;
   late final TextEditingController _dosageController;
   late final TextEditingController _reasonController;
+  late final TextEditingController _expirationDateController;
   late DateTime _expirationDate;
   Medication? _medication;
   User? _selectedUser;
@@ -38,6 +39,8 @@ class _AddEditMedicationScreenState
     _dosageController = TextEditingController(text: _medication?.dosage);
     _reasonController = TextEditingController(text: _medication?.reason);
     _expirationDate = _medication?.expirationDate ?? DateTime.now();
+    _expirationDateController = TextEditingController(
+        text: DateFormat('dd/MM/yyyy').format(_expirationDate));
     _selectedUser = _medication?.user;
   }
 
@@ -46,6 +49,7 @@ class _AddEditMedicationScreenState
     _nameController.dispose();
     _dosageController.dispose();
     _reasonController.dispose();
+    _expirationDateController.dispose();
     super.dispose();
   }
 
@@ -59,6 +63,8 @@ class _AddEditMedicationScreenState
     if (picked != null && picked != _expirationDate) {
       setState(() {
         _expirationDate = picked;
+        _expirationDateController.text =
+            DateFormat('dd/MM/yyyy').format(_expirationDate);
       });
     }
   }
@@ -83,20 +89,8 @@ class _AddEditMedicationScreenState
       }
 
       final notificationService = ref.read(notificationServiceProvider);
-      await notificationService.cancelAllNotificationsForMedication(medication.id!);
-      final notificationDays = [30, 15, 7, 3, 1];
-      for (final days in notificationDays) {
-        final scheduledDate = _expirationDate.subtract(Duration(days: days));
-        if (scheduledDate.isAfter(DateTime.now())) {
-          await notificationService.scheduleNotification(
-            id: medication.id! * 100 + days,
-            title: 'Medication Expiration',
-            body: '${medication.name} will expire in $days days.',
-            scheduledDate: scheduledDate,
-          );
-        }
-      }
-      await ref.refresh(medicationListProvider.future);
+      await notificationService.scheduleNotificationsForMedication(medication);
+      final _ = await ref.refresh(medicationListProvider.future);
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -125,7 +119,7 @@ class _AddEditMedicationScreenState
     if (confirmed == true) {
       await ref.read(notificationServiceProvider).cancelAllNotificationsForMedication(_medication!.id!);
       await ref.read(medicationServiceProvider).deleteMedication(_medication!.id!);
-      await ref.refresh(medicationListProvider.future);
+      final _ = await ref.refresh(medicationListProvider.future);
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -134,6 +128,17 @@ class _AddEditMedicationScreenState
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final inputDecoration = InputDecoration(
+      filled: true,
+      fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -147,18 +152,18 @@ class _AddEditMedicationScreenState
             ),
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text('Medication Name'),
+              const SizedBox(height: 8),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                  icon: Icon(Icons.medication),
-                ),
+                decoration: inputDecoration.copyWith(hintText: 'e.g., Ibuprofen'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a name';
@@ -166,33 +171,25 @@ class _AddEditMedicationScreenState
                   return null;
                 },
               ),
+              const SizedBox(height: 16),
+              const Text('Dosage'),
+              const SizedBox(height: 8),
               TextFormField(
                 controller: _dosageController,
-                decoration: const InputDecoration(
-                  labelText: 'Dosage',
-                  icon: Icon(Icons.medical_services),
-                ),
-              ),
-              TextFormField(
-                controller: _reasonController,
-                decoration: const InputDecoration(
-                  labelText: 'Reason',
-                  icon: Icon(Icons.note),
-                ),
+                decoration: inputDecoration.copyWith(hintText: 'e.g., 2 pills, 200mg, 1 spray'),
               ),
               const SizedBox(height: 16),
+              const Text('For'),
+              const SizedBox(height: 8),
               DropdownButtonFormField<User?>(
                 initialValue: _selectedUser,
-                decoration: const InputDecoration(
-                  labelText: 'User',
-                  icon: Icon(Icons.person),
-                ),
+                decoration: inputDecoration,
                 items: [
                   const DropdownMenuItem<User?>(
                     value: null,
-                    child: Text('For the whole family'),
+                    child: Text('Select Family Member'),
                   ),
-                  ..._users.map((user) => DropdownMenuItem<User?>( 
+                  ..._users.map((user) => DropdownMenuItem<User?>(
                         value: user,
                         child: Text(user.name),
                       )),
@@ -204,24 +201,58 @@ class _AddEditMedicationScreenState
                 },
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today),
-                  const SizedBox(width: 16),
-                  Text('Expires: ${DateFormat('dd/MM/yyyy').format(_expirationDate)}'),
-                  TextButton(
-                    onPressed: () => _selectExpirationDate(context),
-                    child: const Text('Select Date'),
-                  ),
-                ],
+              const Text('Reason for Use'),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _reasonController,
+                decoration: inputDecoration.copyWith(hintText: 'e.g., Headache'),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _saveMedication,
-                child: const Text('Save'),
+              const Text('Expiration Date'),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _expirationDateController,
+                readOnly: true,
+                onTap: () => _selectExpirationDate(context),
+                decoration: inputDecoration.copyWith(
+                  suffixIcon: const Icon(Icons.calendar_today),
+                ),
               ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                final notificationService = ref.read(notificationServiceProvider);
+                notificationService.scheduleNotification(
+                  id: 999,
+                  title: 'Test Notification',
+                  body: 'This is a test notification.',
+                  scheduledDate: DateTime.now().add(const Duration(seconds: 5)),
+                );
+              },
+              child: const Text('Test Notification'),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: _saveMedication,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                minimumSize: const Size(double.infinity, 56),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Save'),
+            ),
+          ],
         ),
       ),
     );
