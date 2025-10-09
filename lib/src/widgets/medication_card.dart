@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kura/l10n/app_localizations.dart';
 import 'package:kura/src/models/medication.dart';
 
 class MedicationCard extends StatelessWidget {
@@ -10,6 +11,7 @@ class MedicationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final difference = medication.expirationDate.difference(now).inDays;
 
@@ -19,12 +21,12 @@ class MedicationCard extends StatelessWidget {
     Color statusColor;
 
     if (difference < 0) {
-      expirationText = 'Expires: ${DateFormat('MM/yyyy').format(medication.expirationDate)}';
+      expirationText = l10n.expiredOn + DateFormat('MM/yyyy').format(medication.expirationDate);
       expirationColor = Colors.red;
       statusIcon = Icons.warning_amber_rounded;
       statusColor = Colors.red;
     } else {
-      expirationText = 'Expires: ${DateFormat('MM/yyyy').format(medication.expirationDate)}';
+      expirationText = l10n.expiresOn + DateFormat('MM/yyyy').format(medication.expirationDate);
       expirationColor = Colors.green;
       statusIcon = Icons.check_circle_outline_rounded;
       statusColor = Colors.green;
@@ -50,8 +52,10 @@ class MedicationCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
+            if (medication.dosage != null && medication.dosage!.isNotEmpty)
+              Text(l10n.dosageCard + medication.dosage!, style: theme.textTheme.bodyMedium),
             if (medication.user != null)
-              Text('For: ${medication.user!.name}', style: theme.textTheme.bodyMedium),
+              Text(l10n.forMedication + medication.user!.name, style: theme.textTheme.bodyMedium),
             if (medication.reason != null && medication.reason!.isNotEmpty)
               Text(medication.reason!, style: theme.textTheme.bodySmall),
             const SizedBox(height: 8),

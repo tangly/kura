@@ -3,6 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:kura/l10n/app_localizations.dart';
 import 'package:kura/src/models/medication.dart';
 import 'package:kura/src/models/user.dart';
 import 'package:kura/src/services/notification_service_impl.dart';
@@ -62,6 +63,8 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: const MedicationListScreen(),
     );
   }

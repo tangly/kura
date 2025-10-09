@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:kura/l10n/app_localizations.dart';
 import 'package:kura/src/models/medication.dart';
 import 'package:kura/src/models/user.dart';
 import 'package:kura/src/providers.dart';
@@ -93,19 +94,20 @@ class _AddEditMedicationScreenState
   }
 
   void _deleteMedication() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Medication'),
-        content: const Text('Are you sure you want to delete this medication?'),
+        title: Text(l10n.deleteMedication),
+        content: Text(l10n.areYouSureYouWantToDeleteThisMedication),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -124,6 +126,7 @@ class _AddEditMedicationScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final inputDecoration = InputDecoration(
       filled: true,
       fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
@@ -138,7 +141,7 @@ class _AddEditMedicationScreenState
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _medication == null ? 'Add Medication' : 'Edit Medication',
+          _medication == null ? l10n.addMedication : l10n.editMedication,
         ),
         actions: [
           if (_medication != null)
@@ -155,36 +158,36 @@ class _AddEditMedicationScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Medication Name'),
+              Text(l10n.medicationName),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _nameController,
-                decoration: inputDecoration.copyWith(hintText: 'e.g., Ibuprofen'),
+                decoration: inputDecoration.copyWith(hintText: l10n.egIbuprofen),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a name';
+                    return l10n.pleaseEnterAName;
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
-              const Text('Dosage'),
+              Text(l10n.dosage),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _dosageController,
-                decoration: inputDecoration.copyWith(hintText: 'e.g., 2 pills, 200mg, 1 spray'),
+                decoration: inputDecoration.copyWith(hintText: l10n.eg2Pills200mg1Spray),
               ),
               const SizedBox(height: 16),
-              const Text('For'),
+              Text(l10n.forMedication),
               const SizedBox(height: 8),
               userList.when(
                 data: (users) => DropdownButtonFormField<User?>(
                   value: _selectedUser,
                   decoration: inputDecoration,
                   items: [
-                    const DropdownMenuItem<User?>(
+                    DropdownMenuItem<User?>(
                       value: null,
-                      child: Text('Select Family Member'),
+                      child: Text(l10n.selectFamilyMember),
                     ),
                     ...users.map((user) => DropdownMenuItem<User?>(
                           value: user,
@@ -198,17 +201,17 @@ class _AddEditMedicationScreenState
                   },
                 ),
                 loading: () => const CircularProgressIndicator(),
-                error: (error, stack) => const Text('Could not load users'),
+                error: (error, stack) => Text(l10n.couldNotLoadUsers),
               ),
               const SizedBox(height: 16),
-              const Text('Reason for Use'),
+              Text(l10n.reasonForUse),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _reasonController,
-                decoration: inputDecoration.copyWith(hintText: 'e.g., Headache'),
+                decoration: inputDecoration.copyWith(hintText: l10n.egHeadache),
               ),
               const SizedBox(height: 16),
-              const Text('Expiration Date'),
+              Text(l10n.expirationDate),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _expirationDateController,
@@ -232,12 +235,12 @@ class _AddEditMedicationScreenState
                 final notificationService = ref.read(notificationServiceProvider);
                 notificationService.scheduleNotification(
                   id: 999,
-                  title: 'Test Notification',
+                  title: l10n.testNotification,
                   body: 'This is a test notification.',
                   scheduledDate: DateTime.now().add(const Duration(seconds: 5)),
                 );
               },
-              child: const Text('Test Notification'),
+              child: Text(l10n.testNotification),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
@@ -250,7 +253,7 @@ class _AddEditMedicationScreenState
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Save'),
+              child: Text(l10n.save),
             ),
           ],
         ),

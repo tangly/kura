@@ -46,6 +46,7 @@ As a user, I want a visually appealing and modern theme so that the application 
 - Added "All", "User", and "Expired" filters to the medication list screen.
 - The filters have a consistent look and feel, using `ActionChip` widgets.
 - The user filter preserves its dropdown functionality by using a `PopupMenuButton` with an `ActionChip` as its child.
+- Implemented multi-language support for English, Spanish, and French.
 
 ---
 
