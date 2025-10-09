@@ -41,6 +41,12 @@ As a user, I want a visually appealing and modern theme so that the application 
 - The notification scheduling logic has been centralized in the `NotificationService`.
 - The UI has been updated to match the design provided in `design/medication_list`.
 
+### Recent Changes
+
+- Added "All", "User", and "Expired" filters to the medication list screen.
+- The filters have a consistent look and feel, using `ActionChip` widgets.
+- The user filter preserves its dropdown functionality by using a `PopupMenuButton` with an `ActionChip` as its child.
+
 ---
 
 ## Review & Acceptance Checklist

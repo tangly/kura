@@ -26,11 +26,6 @@ class _AddEditMedicationScreenState
   Medication? _medication;
   User? _selectedUser;
 
-  final _users = [
-    const User(id: 1, name: 'John'),
-    const User(id: 2, name: 'Jane'),
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -138,6 +133,7 @@ class _AddEditMedicationScreenState
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );
+    final userList = ref.watch(userListProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -181,24 +177,28 @@ class _AddEditMedicationScreenState
               const SizedBox(height: 16),
               const Text('For'),
               const SizedBox(height: 8),
-              DropdownButtonFormField<User?>(
-                initialValue: _selectedUser,
-                decoration: inputDecoration,
-                items: [
-                  const DropdownMenuItem<User?>(
-                    value: null,
-                    child: Text('Select Family Member'),
-                  ),
-                  ..._users.map((user) => DropdownMenuItem<User?>(
-                        value: user,
-                        child: Text(user.name),
-                      )),
-                ],
-                onChanged: (user) {
-                  setState(() {
-                    _selectedUser = user;
-                  });
-                },
+              userList.when(
+                data: (users) => DropdownButtonFormField<User?>(
+                  value: _selectedUser,
+                  decoration: inputDecoration,
+                  items: [
+                    const DropdownMenuItem<User?>(
+                      value: null,
+                      child: Text('Select Family Member'),
+                    ),
+                    ...users.map((user) => DropdownMenuItem<User?>(
+                          value: user,
+                          child: Text(user.name),
+                        )),
+                  ],
+                  onChanged: (user) {
+                    setState(() {
+                      _selectedUser = user;
+                    });
+                  },
+                ),
+                loading: () => const CircularProgressIndicator(),
+                error: (error, stack) => const Text('Could not load users'),
               ),
               const SizedBox(height: 16),
               const Text('Reason for Use'),

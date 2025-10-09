@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kura/src/models/user.dart';
 import 'package:kura/src/providers.dart';
 import 'package:kura/src/views/add_edit_medication_screen.dart';
 import 'package:kura/src/widgets/medication_card.dart';
@@ -10,6 +11,9 @@ class MedicationListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final medicationList = ref.watch(medicationListProvider);
+    final userList = ref.watch(userListProvider);
+    final selectedUser = ref.watch(selectedUserProvider);
+    final filter = ref.watch(medicationFilterProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -38,23 +42,93 @@ class MedicationListScreen extends ConsumerWidget {
                 Text('Filter by:', style: theme.textTheme.bodyMedium),
                 Row(
                   children: [
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                        foregroundColor: theme.colorScheme.primary,
-                      ),
-                      child: const Text('All'),
+                    ActionChip(
+                      label: const Text('All'),
+                      onPressed: () {
+                        ref.read(medicationFilterProvider.notifier).state = MedicationFilter.all;
+                      },
+                      backgroundColor: filter == MedicationFilter.all
+                          ? theme.colorScheme.primary.withOpacity(0.1)
+                          : null,
                     ),
                     const SizedBox(width: 8),
-                    OutlinedButton(
-                      onPressed: () {},
-                      child: const Text('Active'),
+                    userList.when(
+                      data: (users) {
+                        return PopupMenuButton<User?>(
+                          onSelected: (user) {
+                            ref.read(medicationFilterProvider.notifier).state = MedicationFilter.user;
+                            ref.read(selectedUserProvider.notifier).state = user;
+                          },
+                          itemBuilder: (context) {
+                            return [
+                              const PopupMenuItem<User?>(
+                                value: null,
+                                child: Text('All Users'),
+                              ),
+                              ...users.map((user) {
+                                return PopupMenuItem<User?>(
+                                  value: user,
+                                  child: Text(user.name),
+                                );
+                              }),
+                            ];
+                          },
+                          child: Builder(
+                            builder: (context) {
+                              return ActionChip(
+                                label: Text(selectedUser?.name ?? 'User'),
+                                onPressed: () {
+                                  final RenderBox button = context.findRenderObject() as RenderBox;
+                                  final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                                  final RelativeRect position = RelativeRect.fromRect(
+                                    Rect.fromPoints(
+                                      button.localToGlobal(Offset.zero, ancestor: overlay),
+                                      button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+                                    ),
+                                    Offset.zero & overlay.size,
+                                  );
+                                  showMenu<User?>(
+                                    context: context,
+                                    position: position,
+                                    items: [
+                                      const PopupMenuItem<User?>(
+                                        value: null,
+                                        child: Text('All Users'),
+                                      ),
+                                      ...users.map((user) {
+                                        return PopupMenuItem<User?>(
+                                          value: user,
+                                          child: Text(user.name),
+                                        );
+                                      }),
+                                    ],
+                                  ).then((user) {
+                                    if (user != null) {
+                                      ref.read(medicationFilterProvider.notifier).state = MedicationFilter.user;
+                                      ref.read(selectedUserProvider.notifier).state = user;
+                                    }
+                                  });
+                                },
+                                backgroundColor: filter == MedicationFilter.user
+                                    ? theme.colorScheme.primary.withOpacity(0.1)
+                                    : null,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      loading: () => const CircularProgressIndicator(),
+                      error: (error, stackTrace) => Text('Error: $error'),
                     ),
                     const SizedBox(width: 8),
-                    OutlinedButton(
-                      onPressed: () {},
-                      child: const Text('Expired'),
+                    ActionChip(
+                      label: const Text('Expired'),
+                      onPressed: () {
+                        ref.read(medicationFilterProvider.notifier).state = MedicationFilter.expired;
+                      },
+                      backgroundColor: filter == MedicationFilter.expired
+                          ? theme.colorScheme.primary.withOpacity(0.1)
+                          : null,
                     ),
                   ],
                 ),
