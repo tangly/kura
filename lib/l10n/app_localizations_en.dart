@@ -104,4 +104,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expiresOn => 'Expires on ';
+
+  @override
+  String get addFamilyMember => 'Add Family Member';
+
+  @override
+  String get editFamilyMember => 'Edit Family Member';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get age => 'Age';
+
+  @override
+  String get weight => 'Weight';
+
+  @override
+  String get allergies => 'Allergies';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get egJohn => 'e.g., John';
+
+  @override
+  String get eg30 => 'e.g., 30';
+
+  @override
+  String get eg70_5 => 'e.g., 70.5';
+
+  @override
+  String get egPeanutsPollen => 'e.g., Peanuts, Pollen';
+
+  @override
+  String get egImportantMedicalHistory => 'e.g., Important medical history';
 }

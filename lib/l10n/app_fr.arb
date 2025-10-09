@@ -30,5 +30,17 @@
   "egHeadache": "par exemple, mal de tête",
   "dosageCard": "Dosage: ",
   "expiredOn": "Expiré le ",
-  "expiresOn": "Expire le "
+  "expiresOn": "Expire le ",
+  "addFamilyMember": "Ajouter un membre de la famille",
+  "editFamilyMember": "Modifier le membre de la famille",
+  "name": "Nom",
+  "age": "Âge",
+  "weight": "Poids",
+  "allergies": "Allergies",
+  "notes": "Remarques",
+  "egJohn": "par exemple, Jean",
+  "eg30": "par exemple, 30",
+  "eg70_5": "par exemple, 70.5",
+  "egPeanutsPollen": "par exemple, arachides, pollen",
+  "egImportantMedicalHistory": "par exemple, antécédents médicaux importants"
 }

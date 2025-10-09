@@ -4,6 +4,7 @@ import 'package:kura/l10n/app_localizations.dart';
 import 'package:kura/src/models/user.dart';
 import 'package:kura/src/providers.dart';
 import 'package:kura/src/views/add_edit_medication_screen.dart';
+import 'package:kura/src/views/family_member_list_screen.dart';
 import 'package:kura/src/widgets/medication_card.dart';
 
 class MedicationListScreen extends ConsumerWidget {
@@ -81,11 +82,9 @@ class MedicationListScreen extends ConsumerWidget {
                               child: Builder(
                                 builder: (context) {
                                   return ActionChip(
-                                    label: Flexible(
-                                      child: Text(
-                                        selectedUser?.name ?? l10n.user,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
+                                    label: Text(
+                                      selectedUser?.name ?? l10n.user,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                     onPressed: () {
                                       final RenderBox button = context.findRenderObject() as RenderBox;
@@ -205,8 +204,16 @@ class MedicationListScreen extends ConsumerWidget {
         selectedItemColor: theme.colorScheme.primary,
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: true,
+        onTap: (index) {
+          if (index == 1) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const FamilyMemberListScreen(),
+              ),
+            );
+          }
+        },
       ),
     );
   }
 }
-

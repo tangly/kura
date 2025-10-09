@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
-import 'package:kura/src/models/user.dart';
 
 part 'medication.g.dart';
 
@@ -15,7 +14,7 @@ class Medication extends Equatable {
   @HiveField(3)
   final DateTime expirationDate;
   @HiveField(4)
-  final User? user;
+  final int? userId;
   @HiveField(5)
   final String? reason;
 
@@ -24,7 +23,7 @@ class Medication extends Equatable {
     required this.name,
     this.dosage,
     required this.expirationDate,
-    this.user,
+    this.userId,
     this.reason,
   });
 
@@ -33,7 +32,7 @@ class Medication extends Equatable {
     String? name,
     String? dosage,
     DateTime? expirationDate,
-    User? user,
+    int? userId,
     String? reason,
   }) {
     return Medication(
@@ -41,11 +40,11 @@ class Medication extends Equatable {
       name: name ?? this.name,
       dosage: dosage ?? this.dosage,
       expirationDate: expirationDate ?? this.expirationDate,
-      user: user ?? this.user,
+      userId: userId ?? this.userId,
       reason: reason ?? this.reason,
     );
   }
 
   @override
-  List<Object?> get props => [id, name, dosage, expirationDate, user, reason];
+  List<Object?> get props => [id, name, dosage, expirationDate, userId, reason];
 }

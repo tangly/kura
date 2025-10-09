@@ -30,5 +30,17 @@
   "egHeadache": "e.g., Headache",
   "dosageCard": "Dosage: ",
   "expiredOn": "Expired on ",
-  "expiresOn": "Expires on "
+  "expiresOn": "Expires on ",
+  "addFamilyMember": "Add Family Member",
+  "editFamilyMember": "Edit Family Member",
+  "name": "Name",
+  "age": "Age",
+  "weight": "Weight",
+  "allergies": "Allergies",
+  "notes": "Notes",
+  "egJohn": "e.g., John",
+  "eg30": "e.g., 30",
+  "eg70_5": "e.g., 70.5",
+  "egPeanutsPollen": "e.g., Peanuts, Pollen",
+  "egImportantMedicalHistory": "e.g., Important medical history"
 }

@@ -105,4 +105,40 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get expiresOn => 'Expira el ';
+
+  @override
+  String get addFamilyMember => 'Agregar miembro de la familia';
+
+  @override
+  String get editFamilyMember => 'Editar miembro de la familia';
+
+  @override
+  String get name => 'Nombre';
+
+  @override
+  String get age => 'Edad';
+
+  @override
+  String get weight => 'Peso';
+
+  @override
+  String get allergies => 'Alergias';
+
+  @override
+  String get notes => 'Notas';
+
+  @override
+  String get egJohn => 'p.ej., Juan';
+
+  @override
+  String get eg30 => 'p.ej., 30';
+
+  @override
+  String get eg70_5 => 'p.ej., 70.5';
+
+  @override
+  String get egPeanutsPollen => 'p.ej., Cacahuetes, polen';
+
+  @override
+  String get egImportantMedicalHistory => 'p.ej., historial médico importante';
 }

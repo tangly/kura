@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:kura/l10n/app_localizations.dart';
 import 'package:kura/src/models/medication.dart';
+import 'package:kura/src/providers.dart';
 
-class MedicationCard extends StatelessWidget {
+class MedicationCard extends ConsumerWidget {
   final Medication medication;
 
   const MedicationCard({super.key, required this.medication});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final difference = medication.expirationDate.difference(now).inDays;
+    final userList = ref.watch(userListProvider);
 
     String expirationText;
     Color expirationColor;
@@ -54,8 +57,24 @@ class MedicationCard extends StatelessWidget {
             const SizedBox(height: 8),
             if (medication.dosage != null && medication.dosage!.isNotEmpty)
               Text(l10n.dosageCard + medication.dosage!, style: theme.textTheme.bodyMedium),
-            if (medication.user != null)
-              Text(l10n.forMedication + medication.user!.name, style: theme.textTheme.bodyMedium),
+            if (medication.userId != null)
+              userList.when(
+                data: (users) {
+                  final user = users.isNotEmpty
+                      ? users.firstWhere(
+                          (user) => user.id == medication.userId,
+                          orElse: () => users.first, // or handle differently if users can be empty
+                        )
+                      : null;
+                  if (user != null && user.id == medication.userId) {
+                    return Text(l10n.forMedication + user.name, style: theme.textTheme.bodyMedium);
+                  } else {
+                    return const SizedBox();
+                  }
+                },
+                loading: () => const SizedBox(),
+                error: (error, stack) => const SizedBox(),
+              ),
             if (medication.reason != null && medication.reason!.isNotEmpty)
               Text(medication.reason!, style: theme.textTheme.bodySmall),
             const SizedBox(height: 8),

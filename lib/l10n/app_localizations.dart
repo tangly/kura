@@ -291,6 +291,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Expires on '**
   String get expiresOn;
+
+  /// No description provided for @addFamilyMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Family Member'**
+  String get addFamilyMember;
+
+  /// No description provided for @editFamilyMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Family Member'**
+  String get editFamilyMember;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @age.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get age;
+
+  /// No description provided for @weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight;
+
+  /// No description provided for @allergies.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergies'**
+  String get allergies;
+
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @egJohn.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., John'**
+  String get egJohn;
+
+  /// No description provided for @eg30.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., 30'**
+  String get eg30;
+
+  /// No description provided for @eg70_5.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., 70.5'**
+  String get eg70_5;
+
+  /// No description provided for @egPeanutsPollen.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Peanuts, Pollen'**
+  String get egPeanutsPollen;
+
+  /// No description provided for @egImportantMedicalHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Important medical history'**
+  String get egImportantMedicalHistory;
 }
 
 class _AppLocalizationsDelegate

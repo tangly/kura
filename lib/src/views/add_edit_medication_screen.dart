@@ -25,7 +25,7 @@ class _AddEditMedicationScreenState
   late final TextEditingController _expirationDateController;
   late DateTime _expirationDate;
   Medication? _medication;
-  User? _selectedUser;
+  int? _selectedUserId;
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class _AddEditMedicationScreenState
     _expirationDate = _medication?.expirationDate ?? DateTime.now();
     _expirationDateController = TextEditingController(
         text: DateFormat('dd/MM/yyyy').format(_expirationDate));
-    _selectedUser = _medication?.user;
+    _selectedUserId = _medication?.userId;
   }
 
   @override
@@ -72,7 +72,7 @@ class _AddEditMedicationScreenState
         name: _nameController.text,
         dosage: _dosageController.text,
         expirationDate: _expirationDate,
-        user: _selectedUser,
+        userId: _selectedUserId,
         reason: _reasonController.text,
       );
       if (_medication?.id == null) {
@@ -181,25 +181,36 @@ class _AddEditMedicationScreenState
               Text(l10n.forMedication),
               const SizedBox(height: 8),
               userList.when(
-                data: (users) => DropdownButtonFormField<User?>(
-                  value: _selectedUser,
-                  decoration: inputDecoration,
-                  items: [
-                    DropdownMenuItem<User?>(
-                      value: null,
-                      child: Text(l10n.selectFamilyMember),
-                    ),
-                    ...users.map((user) => DropdownMenuItem<User?>(
-                          value: user,
-                          child: Text(user.name),
-                        )),
-                  ],
-                  onChanged: (user) {
-                    setState(() {
-                      _selectedUser = user;
-                    });
-                  },
-                ),
+                data: (users) {
+                  // Remove duplicate users by id
+                  final uniqueUsers = {
+                    for (var user in users) user.id: user,
+                  }.values.toList();
+
+                  // If _selectedUserId is not in the list, set it to null
+                  final validUserIds = uniqueUsers.map((u) => u.id).toSet();
+                  final initialValue = validUserIds.contains(_selectedUserId) ? _selectedUserId : null;
+
+                  return DropdownButtonFormField<int?>(
+                    initialValue: initialValue,
+                    decoration: inputDecoration,
+                    items: [
+                      DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text(l10n.selectFamilyMember),
+                      ),
+                      ...uniqueUsers.map((user) => DropdownMenuItem<int?>(
+                            value: user.id,
+                            child: Text(user.name),
+                          )),
+                    ],
+                    onChanged: (userId) {
+                      setState(() {
+                        _selectedUserId = userId;
+                      });
+                    },
+                  );
+                },
                 loading: () => const CircularProgressIndicator(),
                 error: (error, stack) => Text(l10n.couldNotLoadUsers),
               ),

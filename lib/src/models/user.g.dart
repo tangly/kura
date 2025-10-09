@@ -17,19 +17,31 @@ class UserAdapter extends TypeAdapter<User> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return User(
-      id: fields[0] as int,
+      id: fields[0] as int?,
       name: fields[1] as String,
+      age: fields[2] as int?,
+      weight: fields[3] as double?,
+      allergies: fields[4] as String?,
+      notes: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.name);
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.age)
+      ..writeByte(3)
+      ..write(obj.weight)
+      ..writeByte(4)
+      ..write(obj.allergies)
+      ..writeByte(5)
+      ..write(obj.notes);
   }
 
   @override

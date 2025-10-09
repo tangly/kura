@@ -30,5 +30,17 @@
   "egHeadache": "p.ej., dolor de cabeza",
   "dosageCard": "Dosis: ",
   "expiredOn": "Caducado el ",
-  "expiresOn": "Expira el "
+  "expiresOn": "Expira el ",
+  "addFamilyMember": "Agregar miembro de la familia",
+  "editFamilyMember": "Editar miembro de la familia",
+  "name": "Nombre",
+  "age": "Edad",
+  "weight": "Peso",
+  "allergies": "Alergias",
+  "notes": "Notas",
+  "egJohn": "p.ej., Juan",
+  "eg30": "p.ej., 30",
+  "eg70_5": "p.ej., 70.5",
+  "egPeanutsPollen": "p.ej., Cacahuetes, polen",
+  "egImportantMedicalHistory": "p.ej., historial médico importante"
 }

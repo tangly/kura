@@ -52,7 +52,7 @@ final medicationListProvider = FutureProvider<List<Medication>>((ref) async {
         return medications;
       } else {
         return medications
-            .where((medication) => medication.user?.id == selectedUser.id)
+            .where((medication) => medication.userId == selectedUser.id)
             .toList();
       }
     case MedicationFilter.expired:
