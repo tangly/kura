@@ -14,7 +14,7 @@ class Medication extends Equatable {
   @HiveField(3)
   final DateTime expirationDate;
   @HiveField(4)
-  final int? userId;
+  final List<int>? userIds;
   @HiveField(5)
   final String? reason;
 
@@ -23,7 +23,7 @@ class Medication extends Equatable {
     required this.name,
     this.dosage,
     required this.expirationDate,
-    this.userId,
+    this.userIds,
     this.reason,
   });
 
@@ -32,7 +32,7 @@ class Medication extends Equatable {
     String? name,
     String? dosage,
     DateTime? expirationDate,
-    int? userId,
+    List<int>? userIds,
     String? reason,
   }) {
     return Medication(
@@ -40,11 +40,11 @@ class Medication extends Equatable {
       name: name ?? this.name,
       dosage: dosage ?? this.dosage,
       expirationDate: expirationDate ?? this.expirationDate,
-      userId: userId ?? this.userId,
+      userIds: userIds ?? this.userIds,
       reason: reason ?? this.reason,
     );
   }
 
   @override
-  List<Object?> get props => [id, name, dosage, expirationDate, userId, reason];
+  List<Object?> get props => [id, name, dosage, expirationDate, userIds, reason];
 }

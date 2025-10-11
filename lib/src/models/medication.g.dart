@@ -21,7 +21,7 @@ class MedicationAdapter extends TypeAdapter<Medication> {
       name: fields[1] as String,
       dosage: fields[2] as String?,
       expirationDate: fields[3] as DateTime,
-      userId: fields[4] as int?,
+      userIds: (fields[4] as List?)?.cast<int>(),
       reason: fields[5] as String?,
     );
   }
@@ -39,7 +39,7 @@ class MedicationAdapter extends TypeAdapter<Medication> {
       ..writeByte(3)
       ..write(obj.expirationDate)
       ..writeByte(4)
-      ..write(obj.userId)
+      ..write(obj.userIds)
       ..writeByte(5)
       ..write(obj.reason);
   }

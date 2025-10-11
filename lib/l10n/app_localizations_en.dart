@@ -12,9 +12,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get medications => 'Medications';
 
   @override
-  String get filterBy => 'Filter by:';
-
-  @override
   String get all => 'All';
 
   @override

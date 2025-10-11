@@ -5,6 +5,7 @@ import 'package:kura/l10n/app_localizations.dart';
 import 'package:kura/src/models/medication.dart';
 import 'package:kura/src/models/user.dart';
 import 'package:kura/src/providers.dart';
+import 'package:kura/src/widgets/multi_select_dialog.dart';
 
 class AddEditMedicationScreen extends ConsumerStatefulWidget {
   final Medication? medication;
@@ -25,7 +26,7 @@ class _AddEditMedicationScreenState
   late final TextEditingController _expirationDateController;
   late DateTime _expirationDate;
   Medication? _medication;
-  int? _selectedUserId;
+  List<int> _selectedUserIds = [];
 
   @override
   void initState() {
@@ -37,7 +38,7 @@ class _AddEditMedicationScreenState
     _expirationDate = _medication?.expirationDate ?? DateTime.now();
     _expirationDateController = TextEditingController(
         text: DateFormat('dd/MM/yyyy').format(_expirationDate));
-    _selectedUserId = _medication?.userId;
+    _selectedUserIds = _medication?.userIds ?? [];
   }
 
   @override
@@ -72,7 +73,7 @@ class _AddEditMedicationScreenState
         name: _nameController.text,
         dosage: _dosageController.text,
         expirationDate: _expirationDate,
-        userId: _selectedUserId,
+        userIds: _selectedUserIds,
         reason: _reasonController.text,
       );
       if (_medication?.id == null) {
@@ -132,7 +133,7 @@ class _AddEditMedicationScreenState
       fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide.none,
+        borderSide: BorderSide(width: 0),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );
@@ -182,33 +183,32 @@ class _AddEditMedicationScreenState
               const SizedBox(height: 8),
               userList.when(
                 data: (users) {
-                  // Remove duplicate users by id
-                  final uniqueUsers = {
-                    for (var user in users) user.id: user,
-                  }.values.toList();
-
-                  // If _selectedUserId is not in the list, set it to null
-                  final validUserIds = uniqueUsers.map((u) => u.id).toSet();
-                  final initialValue = validUserIds.contains(_selectedUserId) ? _selectedUserId : null;
-
-                  return DropdownButtonFormField<int?>(
-                    initialValue: initialValue,
-                    decoration: inputDecoration,
-                    items: [
-                      DropdownMenuItem<int?>(
-                        value: null,
-                        child: Text(l10n.selectFamilyMember),
-                      ),
-                      ...uniqueUsers.map((user) => DropdownMenuItem<int?>(
-                            value: user.id,
-                            child: Text(user.name),
-                          )),
-                    ],
-                    onChanged: (userId) {
-                      setState(() {
-                        _selectedUserId = userId;
-                      });
+                  return InkWell(
+                    onTap: () async {
+                      final selectedUserIds = await showDialog<List<int>>(
+                        context: context,
+                        builder: (context) => MultiSelectDialog(
+                          users: users,
+                          selectedUserIds: _selectedUserIds,
+                        ),
+                      );
+                      if (selectedUserIds != null) {
+                        setState(() {
+                          _selectedUserIds = selectedUserIds;
+                        });
+                      }
                     },
+                    child: InputDecorator(
+                      decoration: inputDecoration,
+                      child: Text(
+                        _selectedUserIds.isEmpty
+                            ? l10n.selectFamilyMember
+                            : users
+                                .where((user) => _selectedUserIds.contains(user.id))
+                                .map((user) => user.name)
+                                .join(', '),
+                      ),
+                    ),
                   );
                 },
                 loading: () => const CircularProgressIndicator(),

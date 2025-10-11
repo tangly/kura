@@ -14,8 +14,6 @@ class MedicationCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final now = DateTime.now();
-    final difference = medication.expirationDate.difference(now).inDays;
     final userList = ref.watch(userListProvider);
 
     String expirationText;
@@ -23,13 +21,13 @@ class MedicationCard extends ConsumerWidget {
     IconData statusIcon;
     Color statusColor;
 
-    if (difference < 0) {
-      expirationText = l10n.expiredOn + DateFormat('MM/yyyy').format(medication.expirationDate);
+    if (medication.expirationDate.isBefore(DateTime.now())) {
+      expirationText = l10n.expiredOn + DateFormat('dd/MM/yyyy').format(medication.expirationDate);
       expirationColor = Colors.red;
       statusIcon = Icons.warning_amber_rounded;
       statusColor = Colors.red;
     } else {
-      expirationText = l10n.expiresOn + DateFormat('MM/yyyy').format(medication.expirationDate);
+      expirationText = l10n.expiresOn + DateFormat('dd/MM/yyyy').format(medication.expirationDate);
       expirationColor = Colors.green;
       statusIcon = Icons.check_circle_outline_rounded;
       statusColor = Colors.green;
@@ -57,20 +55,24 @@ class MedicationCard extends ConsumerWidget {
             const SizedBox(height: 8),
             if (medication.dosage != null && medication.dosage!.isNotEmpty)
               Text(l10n.dosageCard + medication.dosage!, style: theme.textTheme.bodyMedium),
-            if (medication.userId != null)
+            if (medication.userIds != null && medication.userIds!.isNotEmpty)
               userList.when(
                 data: (users) {
-                  final user = users.isNotEmpty
-                      ? users.firstWhere(
-                          (user) => user.id == medication.userId,
-                          orElse: () => users.first, // or handle differently if users can be empty
-                        )
-                      : null;
-                  if (user != null && user.id == medication.userId) {
-                    return Text(l10n.forMedication + user.name, style: theme.textTheme.bodyMedium);
-                  } else {
-                    return const SizedBox();
-                  }
+                  final medicationUsers = users.where((user) => medication.userIds!.contains(user.id)).toList();
+                  return Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: medicationUsers.map((user) {
+                      return Chip(
+                        label: Text(user.name, style: TextStyle(fontSize: 12, color: theme.colorScheme.primary)),
+                        backgroundColor: theme.colorScheme.primary.withOpacity(0.3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide.none,
+                        ),
+                      );
+                    }).toList(),
+                  );
                 },
                 loading: () => const SizedBox(),
                 error: (error, stack) => const SizedBox(),

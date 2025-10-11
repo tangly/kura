@@ -12,9 +12,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get medications => 'Medicamentos';
 
   @override
-  String get filterBy => 'Filtrar por:';
-
-  @override
   String get all => 'Todos';
 
   @override

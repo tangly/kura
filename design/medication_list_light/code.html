@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Medication Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#00aaff",
+            "background-light": "#f8f9fa",
+            "background-dark": "#121212",
+            "card-light": "#ffffff",
+            "border-light": "#e9ecef",
+            "text-light-mode": "#111827",
+            "text-secondary-light": "#6c757d",
+            "accent-blue": "#00aaff",
+            "accent-red": "#ff3b30",
+            "accent-green": "#34c759"
+          },
+          fontFamily: {
+            display: "Inter"
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.75rem",
+            xl: "1rem",
+            full: "9999px"
+          }
+        }
+      }
+    };</script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 1,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light font-display">
+<div class="flex flex-col h-screen justify-between">
+<div>
+<header class="sticky top-0 bg-background-light/80 backdrop-blur-sm z-10">
+<div class="flex items-center justify-between p-4 border-b border-border-light">
+<div class="w-10"></div>
+<h1 class="text-lg font-bold text-text-light-mode">Medications</h1>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-accent-blue hover:bg-accent-blue/10">
+<span class="material-symbols-outlined text-3xl">add_circle</span>
+</button>
+</div>
+</header>
+<main class="p-4 space-y-6">
+<div class="flex items-center justify-center mb-4">
+<div class="flex items-center space-x-2 bg-gray-200 p-1 rounded-full">
+<button class="px-4 py-2 text-sm font-semibold rounded-full bg-accent-blue text-white">All</button>
+<button class="px-4 py-2 text-sm font-medium rounded-full text-text-secondary-light hover:bg-white">Active</button>
+<button class="px-4 py-2 text-sm font-medium rounded-full text-text-secondary-light hover:bg-white">Expired</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="bg-card-light rounded-xl shadow-md p-5 flex flex-col justify-between border border-border-light">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 rounded-full bg-accent-red/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-accent-red text-3xl">medication</span>
+</div>
+<div>
+<p class="font-bold text-text-light-mode text-lg">Ibuprofen</p>
+<p class="text-sm text-text-secondary-light">Pain relief</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-accent-red text-3xl">warning</span>
+</div>
+<div class="flex items-end justify-between mt-auto">
+<div>
+<p class="text-xs text-text-secondary-light mb-1">For</p>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-indigo-400 flex items-center justify-center text-xs font-bold text-white">L</div>
+<span class="font-medium text-text-light-mode">Liam</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm text-accent-red font-semibold">Expires: 12/2024</p>
+</div>
+</div>
+</div>
+<div class="bg-card-light rounded-xl shadow-md p-5 flex flex-col justify-between border border-border-light">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 rounded-full bg-accent-blue/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-accent-blue text-3xl">medication</span>
+</div>
+<div>
+<p class="font-bold text-text-light-mode text-lg">Amoxicillin</p>
+<p class="text-sm text-text-secondary-light">Infection</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-accent-green text-3xl">check_circle</span>
+</div>
+<div class="flex items-end justify-between mt-auto">
+<div>
+<p class="text-xs text-text-secondary-light mb-1">For</p>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-pink-400 flex items-center justify-center text-xs font-bold text-white">S</div>
+<span class="font-medium text-text-light-mode">Sophia</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm text-accent-green font-semibold">Expires: 08/2025</p>
+</div>
+</div>
+</div>
+<div class="bg-card-light rounded-xl shadow-md p-5 flex flex-col justify-between border border-border-light">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 rounded-full bg-accent-blue/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-accent-blue text-3xl">medication</span>
+</div>
+<div>
+<p class="font-bold text-text-light-mode text-lg">Acetaminophen</p>
+<p class="text-sm text-text-secondary-light">Fever</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-accent-green text-3xl">check_circle</span>
+</div>
+<div class="flex items-end justify-between mt-auto">
+<div>
+<p class="text-xs text-text-secondary-light mb-1">For</p>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-green-400 flex items-center justify-center text-xs font-bold text-white">N</div>
+<span class="font-medium text-text-light-mode">Noah</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm text-accent-green font-semibold">Expires: 03/2026</p>
+</div>
+</div>
+</div>
+<div class="bg-card-light rounded-xl shadow-md p-5 flex flex-col justify-between border border-border-light">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center space-x-4">
+<div class="w-12 h-12 rounded-full bg-accent-blue/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-accent-blue text-3xl">medication</span>
+</div>
+<div>
+<p class="font-bold text-text-light-mode text-lg">Diphenhydramine</p>
+<p class="text-sm text-text-secondary-light">Allergies</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-accent-green text-3xl">check_circle</span>
+</div>
+<div class="flex items-end justify-between mt-auto">
+<div>
+<p class="text-xs text-text-secondary-light mb-1">For</p>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-purple-400 flex items-center justify-center text-xs font-bold text-white">O</div>
+<div class="w-6 h-6 rounded-full bg-pink-400 flex items-center justify-center text-xs font-bold text-white -ml-3 border-2 border-card-light">S</div>
+<span class="font-medium text-text-light-mode">Olivia, Sophia</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm text-accent-green font-semibold">Expires: 11/2025</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<nav class="bg-card-light border-t border-border-light px-4 pt-3 pb-5">
+<div class="flex justify-around">
+<a class="flex flex-col items-center gap-1 text-accent-blue" href="#">
+<span class="material-symbols-outlined">medication</span>
+<span class="text-xs font-medium">Medications</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-text-secondary-light hover:text-accent-blue transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-xs font-medium">Family</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-text-secondary-light hover:text-accent-blue transition-colors" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="text-xs font-medium">Reminders</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-text-secondary-light hover:text-accent-blue transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-xs font-medium">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>

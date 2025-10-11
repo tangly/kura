@@ -106,12 +106,6 @@ abstract class AppLocalizations {
   /// **'Medications'**
   String get medications;
 
-  /// No description provided for @filterBy.
-  ///
-  /// In en, this message translates to:
-  /// **'Filter by:'**
-  String get filterBy;
-
   /// No description provided for @all.
   ///
   /// In en, this message translates to:

@@ -22,6 +22,7 @@ class MedicationListScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.medications),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.add, size: 32),
@@ -42,105 +43,66 @@ class MedicationListScreen extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l10n.filterBy, style: theme.textTheme.bodyMedium),
                 Flexible(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        ActionChip(
-                          label: Text(l10n.all),
-                          onPressed: () {
+                        GestureDetector(
+                          onTap: () {
                             ref.read(medicationFilterProvider.notifier).state = MedicationFilter.all;
                           },
-                          backgroundColor: filter == MedicationFilter.all
-                              ? theme.colorScheme.primary.withOpacity(0.1)
-                              : null,
+                          child: Chip(
+                            label: Text(l10n.all, style: TextStyle(fontSize: 12, color: filter == MedicationFilter.all ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color)),
+                            backgroundColor: filter == MedicationFilter.all ? theme.colorScheme.primary.withOpacity(0.1) : Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: filter == MedicationFilter.all ? BorderSide(color: theme.colorScheme.primary, width: 0.5) : BorderSide(color: theme.dividerColor, width: 0.5),
+                            ),
+                          ),
                         ),
                         const SizedBox(width: 8),
                         userList.when(
                           data: (users) {
-                            return PopupMenuButton<User?>(
-                              onSelected: (user) {
-                                ref.read(medicationFilterProvider.notifier).state = MedicationFilter.user;
-                                ref.read(selectedUserProvider.notifier).state = user;
-                              },
-                              itemBuilder: (context) {
-                                return [
-                                  PopupMenuItem<User?>(
-                                    value: null,
-                                    child: Text(l10n.allUsers),
-                                  ),
-                                  ...users.map((user) {
-                                    return PopupMenuItem<User?>(
-                                      value: user,
-                                      child: Text(user.name),
-                                    );
-                                  }),
-                                ];
-                              },
-                              child: Builder(
-                                builder: (context) {
-                                  return ActionChip(
-                                    label: Text(
-                                      selectedUser?.name ?? l10n.user,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    onPressed: () {
-                                      final RenderBox button = context.findRenderObject() as RenderBox;
-                                      final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-                                      final RelativeRect position = RelativeRect.fromRect(
-                                        Rect.fromPoints(
-                                          button.localToGlobal(Offset.zero, ancestor: overlay),
-                                          button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
-                                        ),
-                                        Offset.zero & overlay.size,
-                                      );
-                                      showMenu<User?>(
-                                        context: context,
-                                        position: position,
-                                        items: [
-                                          PopupMenuItem<User?>(
-                                            value: null,
-                                            child: Text(l10n.allUsers),
-                                          ),
-                                          ...users.map((user) {
-                                            return PopupMenuItem<User?>(
-                                              value: user,
-                                              child: Text(user.name),
-                                            );
-                                          }),
-                                        ],
-                                      ).then((user) {
-                                        if (user != null) {
-                                          ref.read(medicationFilterProvider.notifier).state = MedicationFilter.user;
-                                          ref.read(selectedUserProvider.notifier).state = user;
-                                        } else {
-                                          ref.read(medicationFilterProvider.notifier).state = MedicationFilter.all;
-                                          ref.read(selectedUserProvider.notifier).state = null;
-                                        }
-                                      });
+                            return Row(
+                              children: users.map((user) {
+                                final isSelected = selectedUser == user && filter == MedicationFilter.user;
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      ref.read(medicationFilterProvider.notifier).state = MedicationFilter.user;
+                                      ref.read(selectedUserProvider.notifier).state = user;
                                     },
-                                    backgroundColor: filter == MedicationFilter.user
-                                        ? theme.colorScheme.primary.withOpacity(0.1)
-                                        : null,
-                                  );
-                                },
-                              ),
+                                    child: Chip(
+                                      label: Text(user.name, style: TextStyle(fontSize: 12, color: isSelected ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color)),
+                                      backgroundColor: isSelected ? theme.colorScheme.primary.withOpacity(0.1) : Colors.transparent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        side: isSelected ? BorderSide(color: theme.colorScheme.primary, width: 0.5) : BorderSide(color: theme.dividerColor, width: 0.5),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                             );
                           },
                           loading: () => const CircularProgressIndicator(),
                           error: (error, stackTrace) => Text('Error: $error'),
                         ),
                         const SizedBox(width: 8),
-                        ActionChip(
-                          label: Text(l10n.expired),
-                          onPressed: () {
+                        GestureDetector(
+                          onTap: () {
                             ref.read(medicationFilterProvider.notifier).state = MedicationFilter.expired;
                           },
-                          backgroundColor: filter == MedicationFilter.expired
-                              ? theme.colorScheme.primary.withOpacity(0.1)
-                              : null,
+                          child: Chip(
+                            label: Text(l10n.expired, style: TextStyle(fontSize: 12, color: filter == MedicationFilter.expired ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color)),
+                            backgroundColor: filter == MedicationFilter.expired ? theme.colorScheme.primary.withOpacity(0.1) : Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: filter == MedicationFilter.expired ? BorderSide(color: theme.colorScheme.primary, width: 0.5) : BorderSide(color: theme.dividerColor, width: 0.5),
+                            ),
+                          ),
                         ),
                       ],
                     ),
