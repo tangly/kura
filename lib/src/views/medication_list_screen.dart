@@ -40,75 +40,68 @@ class MedicationListScreen extends ConsumerWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            ref.read(medicationFilterProvider.notifier).state = MedicationFilter.all;
-                          },
-                          child: Chip(
-                            label: Text(l10n.all, style: TextStyle(fontSize: 12, color: filter == MedicationFilter.all ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color)),
-                            backgroundColor: filter == MedicationFilter.all ? theme.colorScheme.primary.withOpacity(0.1) : Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: filter == MedicationFilter.all ? BorderSide(color: theme.colorScheme.primary, width: 0.5) : BorderSide(color: theme.dividerColor, width: 0.5),
-                            ),
-                          ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0.0),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        ref.read(medicationFilterProvider.notifier).state = MedicationFilter.all;
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: filter == MedicationFilter.all ? theme.colorScheme.primary : Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        const SizedBox(width: 8),
-                        userList.when(
-                          data: (users) {
-                            return Row(
-                              children: users.map((user) {
-                                final isSelected = selectedUser == user && filter == MedicationFilter.user;
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      ref.read(medicationFilterProvider.notifier).state = MedicationFilter.user;
-                                      ref.read(selectedUserProvider.notifier).state = user;
-                                    },
-                                    child: Chip(
-                                      label: Text(user.name, style: TextStyle(fontSize: 12, color: isSelected ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color)),
-                                      backgroundColor: isSelected ? theme.colorScheme.primary.withOpacity(0.1) : Colors.transparent,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                        side: isSelected ? BorderSide(color: theme.colorScheme.primary, width: 0.5) : BorderSide(color: theme.dividerColor, width: 0.5),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            );
-                          },
-                          loading: () => const CircularProgressIndicator(),
-                          error: (error, stackTrace) => Text('Error: $error'),
-                        ),
-                        const SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: () {
-                            ref.read(medicationFilterProvider.notifier).state = MedicationFilter.expired;
-                          },
-                          child: Chip(
-                            label: Text(l10n.expired, style: TextStyle(fontSize: 12, color: filter == MedicationFilter.expired ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color)),
-                            backgroundColor: filter == MedicationFilter.expired ? theme.colorScheme.primary.withOpacity(0.1) : Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: filter == MedicationFilter.expired ? BorderSide(color: theme.colorScheme.primary, width: 0.5) : BorderSide(color: theme.dividerColor, width: 0.5),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
+                      child: Text(l10n.all, style: TextStyle(fontSize: 12, color: filter == MedicationFilter.all ? Colors.white : theme.textTheme.bodyMedium?.color)),
                     ),
-                  ),
+                    userList.when(
+                      data: (users) {
+                        return Row(
+                          children: users.map((user) {
+                            final isSelected = selectedUser == user && filter == MedicationFilter.user;
+                            return TextButton(
+                              onPressed: () {
+                                ref.read(medicationFilterProvider.notifier).state = MedicationFilter.user;
+                                ref.read(selectedUserProvider.notifier).state = user;
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: isSelected ? theme.colorScheme.primary : Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: Text(user.name, style: TextStyle(fontSize: 12, color: isSelected ? Colors.white : theme.textTheme.bodyMedium?.color)),
+                            );
+                          }).toList(),
+                        );
+                      },
+                      loading: () => const SizedBox(),
+                      error: (error, stackTrace) => const SizedBox(),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        ref.read(medicationFilterProvider.notifier).state = MedicationFilter.expired;
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: filter == MedicationFilter.expired ? theme.colorScheme.primary : Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Text(l10n.expired, style: TextStyle(fontSize: 12, color: filter == MedicationFilter.expired ? Colors.white : theme.textTheme.bodyMedium?.color)),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
           Expanded(

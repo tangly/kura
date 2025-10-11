@@ -8,7 +8,7 @@ import 'package:timezone/data/latest.dart' as tz;
 
 import 'notification_service_test.mocks.dart';
 
-@GenerateMocks([FlutterLocalNotificationsPlugin])
+@GenerateNiceMocks([MockSpec<FlutterLocalNotificationsPlugin>()])
 void main() {
   late NotificationService notificationService;
   late MockFlutterLocalNotificationsPlugin mockFlutterLocalNotificationsPlugin;
@@ -25,6 +25,7 @@ void main() {
     when(
       mockFlutterLocalNotificationsPlugin.initialize(any),
     ).thenAnswer((_) async => true);
+    when(mockFlutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation()).thenReturn(null);
     await notificationService.init();
     verify(mockFlutterLocalNotificationsPlugin.initialize(any));
   });
@@ -38,6 +39,7 @@ void main() {
         any,
         any,
         androidScheduleMode: anyNamed('androidScheduleMode'),
+        uiLocalNotificationDateInterpretation: anyNamed('uiLocalNotificationDateInterpretation'),
       ),
     ).thenAnswer((_) async => Future.value());
 
@@ -56,6 +58,7 @@ void main() {
         any,
         any,
         androidScheduleMode: anyNamed('androidScheduleMode'),
+        uiLocalNotificationDateInterpretation: anyNamed('uiLocalNotificationDateInterpretation'),
       ),
     );
   });

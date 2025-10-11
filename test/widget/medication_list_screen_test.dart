@@ -12,9 +12,9 @@ void main() {
 
   final now = DateTime.now();
   final medications = [
-    Medication(id: 1, name: 'Aspirin', dosage: '100mg', expirationDate: now.add(const Duration(days: 10)), user: user1),
-    Medication(id: 2, name: 'Ibuprofen', dosage: '200mg', expirationDate: now.add(const Duration(days: 5)), user: user2),
-    Medication(id: 3, name: 'Paracetamol', dosage: '500mg', expirationDate: now.subtract(const Duration(days: 1)), user: user1),
+    Medication(id: 1, name: 'Aspirin', dosage: '100mg', expirationDate: now.add(const Duration(days: 10)), userIds: [user1.id!]),
+    Medication(id: 2, name: 'Ibuprofen', dosage: '200mg', expirationDate: now.add(const Duration(days: 5)), userIds: [user2.id!]),
+    Medication(id: 3, name: 'Paracetamol', dosage: '500mg', expirationDate: now.subtract(const Duration(days: 1)), userIds: [user1.id!]),
   ];
 
   testWidgets('MedicationListScreen displays all medications when filter is all', (WidgetTester tester) async {
@@ -42,7 +42,7 @@ void main() {
         overrides: [
           medicationFilterProvider.overrideWith((ref) => MedicationFilter.user),
           selectedUserProvider.overrideWith((ref) => user2),
-          medicationListProvider.overrideWith((ref) => Future.value(medications.where((med) => med.user?.id == user2.id).toList())),
+          medicationListProvider.overrideWith((ref) => Future.value(medications.where((med) => med.userIds!.contains(user2.id)).toList())),
           userListProvider.overrideWith((ref) => Future.value([user1, user2])),
         ],
         child: const MaterialApp(home: MedicationListScreen()),

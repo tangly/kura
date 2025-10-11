@@ -98,10 +98,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dosageCard => 'Dosage: ';
 
   @override
-  String get expiredOn => 'Expiré le ';
+  String get expiredOn => 'Expiré ';
 
   @override
-  String get expiresOn => 'Expire le ';
+  String get expiresOn => 'Expire ';
 
   @override
   String get addFamilyMember => 'Ajouter un membre de la famille';

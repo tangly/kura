@@ -45,11 +45,18 @@ class _AddEditFamilyMemberScreenState
     super.dispose();
   }
 
+  String _capitalize(String s) {
+    if (s.isEmpty) {
+      return s;
+    }
+    return s[0].toUpperCase() + s.substring(1);
+  }
+
   void _saveUser() async {
     if (_formKey.currentState!.validate()) {
       final userService = ref.read(userServiceProvider);
       final user = User(
-        name: _nameController.text,
+        name: _capitalize(_nameController.text),
         age: int.tryParse(_ageController.text),
         weight: double.tryParse(_weightController.text),
         allergies: _allergiesController.text,

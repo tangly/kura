@@ -277,13 +277,13 @@ abstract class AppLocalizations {
   /// No description provided for @expiredOn.
   ///
   /// In en, this message translates to:
-  /// **'Expired on '**
+  /// **'Expired '**
   String get expiredOn;
 
   /// No description provided for @expiresOn.
   ///
   /// In en, this message translates to:
-  /// **'Expires on '**
+  /// **'Expires '**
   String get expiresOn;
 
   /// No description provided for @addFamilyMember.

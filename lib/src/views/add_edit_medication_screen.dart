@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:kura/l10n/app_localizations.dart';
 import 'package:kura/src/models/medication.dart';
-import 'package:kura/src/models/user.dart';
 import 'package:kura/src/providers.dart';
 import 'package:kura/src/widgets/multi_select_dialog.dart';
 
