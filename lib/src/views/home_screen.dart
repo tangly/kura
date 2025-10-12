@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kura/l10n/app_localizations.dart';
+import 'package:kura/src/providers.dart';
+import 'package:kura/src/theme.dart';
 import 'package:kura/src/views/family_member_list_screen.dart';
 import 'package:kura/src/views/medication_list_screen.dart';
 
@@ -14,13 +16,19 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const _HomeView(),
-    const MedicationListScreen(),
-    const FamilyMemberListScreen(),
-    const Scaffold(body: Center(child: Text('Reminders'))),
-    const Scaffold(body: Center(child: Text('Settings'))),
-  ];
+  late final List<Widget> _widgetOptions;
+
+  @override
+  void initState() {
+    super.initState();
+    _widgetOptions = <Widget>[
+      _HomeView(onNavigate: _onItemTapped),
+      const MedicationListScreen(),
+      const FamilyMemberListScreen(),
+      const Scaffold(body: Center(child: Text('Reminders'))),
+      const Scaffold(body: Center(child: Text('Settings'))),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -68,19 +76,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-class _HomeView extends StatelessWidget {
-  const _HomeView();
+class _HomeView extends ConsumerWidget {
+  final void Function(int) onNavigate;
+  const _HomeView({required this.onNavigate});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final medicationList = ref.watch(medicationListProvider);
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text('Kura', style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
       body: Stack(
         children: [
           Container(
@@ -103,6 +107,19 @@ class _HomeView extends StatelessWidget {
               ),
             ),
           ),
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              padding: const EdgeInsets.only(bottom: 50),
+              child: Text(
+                'Kura',
+                style: theme.textTheme.displayLarge?.copyWith(
+                  color: const Color.fromARGB(255, 202, 133, 114),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -111,19 +128,51 @@ class _HomeView extends StatelessWidget {
                 children: [
                   const SizedBox(height: 500),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
                       Expanded(
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              children: [
-                                Text('2', style: theme.textTheme.headlineMedium),
-                                const SizedBox(height: 8),
-                                const Text('Medications Due'),
-                              ],
+                        child: InkWell(
+                          onTap: () => onNavigate(1),
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: medicationList.when(
+                                loading: () => const Center(child: CircularProgressIndicator()),
+                                error: (err, stack) => const Center(child: Text('Error')),
+                                data: (medications) {
+                                  final expiredCount = medications.where((m) => m.expirationDate.isBefore(DateTime.now())).length;
+                                  final expiringSoonCount = medications.where((m) => m.expirationDate.isAfter(DateTime.now()) && m.expirationDate.isBefore(DateTime.now().add(const Duration(days: 30)))).length;
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Center(child: Text('Medications', style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold))),
+                                      //const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            expiredCount.toString(),
+                                            style: theme.textTheme.headlineSmall?.copyWith(color: theme.colorScheme.error, fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          const Text('Expired'),
+                                        ],
+                                      ),
+                                      //const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            expiringSoonCount.toString(),
+                                            style: theme.textTheme.headlineSmall?.copyWith(color: kWarningColor, fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          const Text('Expiring Soon'),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),

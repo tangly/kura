@@ -125,7 +125,7 @@ class MedicationCard extends ConsumerWidget {
                   return Row(
                     children: [
                       SizedBox(
-                        width: medicationUsers.length * 21.0,
+                        width: medicationUsers.length * 22.0,
                         height: 22.0,
                         child: Stack(
                           children: medicationUsers.asMap().entries.map((

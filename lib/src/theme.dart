@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const primaryColor = Color(0xFF00aaff);
+const primaryColor = Color.fromARGB(255, 89, 80, 116);
 const kSuccessColor = Colors.green;
 const kWarningColor = Colors.orange;
 
