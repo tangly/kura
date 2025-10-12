@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// No description provided for @medications.
   ///
   /// In en, this message translates to:
-  /// **'Medications'**
+  /// **'Medications inventory'**
   String get medications;
 
   /// No description provided for @all.
@@ -129,6 +129,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Expired'**
   String get expired;
+
+  /// No description provided for @homeBottomBar.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeBottomBar;
 
   /// No description provided for @medicationsBottomBar.
   ///

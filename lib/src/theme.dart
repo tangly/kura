@@ -2,6 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 const primaryColor = Color(0xFF00aaff);
+const kSuccessColor = Colors.green;
+const kWarningColor = Colors.orange;
+
+const List<Color> kAvatarColors = [
+  Colors.red,
+  Colors.green,
+  Colors.blue,
+  Colors.orange,
+  Colors.purple,
+  Colors.pink,
+  Colors.amber,
+  Colors.teal,
+  Colors.cyan,
+  Colors.indigo,
+  Colors.lime,
+  Colors.lightBlue,
+];
 
 final lightTheme = ThemeData.light(useMaterial3: true).copyWith(
   colorScheme: ColorScheme.fromSeed(

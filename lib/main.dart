@@ -7,7 +7,7 @@ import 'package:kura/src/models/medication.dart';
 import 'package:kura/src/models/user.dart';
 import 'package:kura/src/services/notification_service_impl.dart';
 import 'package:kura/src/theme.dart';
-import 'package:kura/src/views/medication_list_screen.dart';
+import 'package:kura/src/views/home_screen.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -27,10 +27,10 @@ class MyApp extends StatelessWidget {
       title: 'Medication Manager',
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const MedicationListScreen(),
+      home: const HomeScreen(),
     );
   }
 }

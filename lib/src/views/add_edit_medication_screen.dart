@@ -36,7 +36,7 @@ class _AddEditMedicationScreenState
     _reasonController = TextEditingController(text: _medication?.reason);
     _expirationDate = _medication?.expirationDate ?? DateTime.now();
     _expirationDateController = TextEditingController(
-        text: DateFormat('dd/MM/yyyy').format(_expirationDate));
+        text: DateFormat('MM/yyyy').format(_expirationDate));
     _selectedUserIds = _medication?.userIds ?? [];
   }
 
@@ -55,12 +55,13 @@ class _AddEditMedicationScreenState
       initialDate: _expirationDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+      initialDatePickerMode: DatePickerMode.year,
     );
     if (picked != null && picked != _expirationDate) {
       setState(() {
-        _expirationDate = picked;
+        _expirationDate = DateTime(picked.year, picked.month + 1, 0);
         _expirationDateController.text =
-            DateFormat('dd/MM/yyyy').format(_expirationDate);
+            DateFormat('MM/yyyy').format(_expirationDate);
       });
     }
   }
@@ -240,7 +241,7 @@ class _AddEditMedicationScreenState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ElevatedButton(
+            /* ElevatedButton(
               onPressed: () {
                 final notificationService = ref.read(notificationServiceProvider);
                 notificationService.scheduleNotification(
@@ -251,20 +252,21 @@ class _AddEditMedicationScreenState
                 );
               },
               child: Text(l10n.testNotification),
-            ),
+            ), */
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _saveMedication,
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
-                minimumSize: const Size(double.infinity, 56),
+                minimumSize: const Size(double.infinity, 48),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: Text(l10n.save),
+              child: Text(l10n.save, style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold)),
             ),
+            const SizedBox(height: 8),
           ],
         ),
       ),

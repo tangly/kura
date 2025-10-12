@@ -9,7 +9,7 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get medications => 'Médicaments';
+  String get medications => 'Inventaire des médicaments';
 
   @override
   String get all => 'Tous';
@@ -22,6 +22,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get expired => 'Expiré';
+
+  @override
+  String get homeBottomBar => 'Accueil';
 
   @override
   String get medicationsBottomBar => 'Médicaments';

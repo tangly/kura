@@ -1,9 +1,10 @@
 {
-  "medications": "Medicamentos",
+  "medications": "Inventario de medicamentos",
   "all": "Todos",
   "user": "Usuario",
   "allUsers": "Todos los usuarios",
   "expired": "Caducado",
+  "homeBottomBar": "Inicio",
   "medicationsBottomBar": "Medicamentos",
   "familyBottomBar": "Familia",
   "remindersBottomBar": "Recordatorios",

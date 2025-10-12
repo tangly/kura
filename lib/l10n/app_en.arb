@@ -1,9 +1,10 @@
 {
-  "medications": "Medications",
+  "medications": "Medications inventory",
   "all": "All",
   "user": "User",
   "allUsers": "All Users",
   "expired": "Expired",
+  "homeBottomBar": "Home",
   "medicationsBottomBar": "Medications",
   "familyBottomBar": "Family",
   "remindersBottomBar": "Reminders",

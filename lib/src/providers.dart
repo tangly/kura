@@ -11,7 +11,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kura/src/services/user_service.dart';
 import 'package:kura/src/services/user_service_impl.dart';
 
-enum MedicationFilter { all, user, expired }
+enum MedicationFilter { all, user }
 
 final medicationFilterProvider = StateProvider<MedicationFilter>((ref) => MedicationFilter.all);
 
@@ -44,6 +44,8 @@ final medicationListProvider = FutureProvider<List<Medication>>((ref) async {
   final selectedUser = ref.watch(selectedUserProvider);
   final medications = await medicationService.getMedications();
 
+  medications.sort((a, b) => a.expirationDate.compareTo(b.expirationDate));
+
   switch (filter) {
     case MedicationFilter.all:
       return medications;
@@ -55,9 +57,5 @@ final medicationListProvider = FutureProvider<List<Medication>>((ref) async {
             .where((medication) => medication.userIds!.contains(selectedUser.id))
             .toList();
       }
-    case MedicationFilter.expired:
-      return medications
-          .where((medication) => medication.expirationDate.isBefore(DateTime.now()))
-          .toList();
   }
 });
