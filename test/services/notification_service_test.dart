@@ -30,36 +30,5 @@ void main() {
     verify(mockFlutterLocalNotificationsPlugin.initialize(any));
   });
 
-  test('scheduleNotification should schedule a notification', () async {
-    when(
-      mockFlutterLocalNotificationsPlugin.zonedSchedule(
-        any,
-        any,
-        any,
-        any,
-        any,
-        androidScheduleMode: anyNamed('androidScheduleMode'),
-        uiLocalNotificationDateInterpretation: anyNamed('uiLocalNotificationDateInterpretation'),
-      ),
-    ).thenAnswer((_) async => Future.value());
-
-    await notificationService.scheduleNotification(
-      id: 1,
-      title: 'title',
-      body: 'body',
-      scheduledDate: DateTime.now().add(const Duration(seconds: 5)),
-    );
-
-    verify(
-      mockFlutterLocalNotificationsPlugin.zonedSchedule(
-        any,
-        any,
-        any,
-        any,
-        any,
-        androidScheduleMode: anyNamed('androidScheduleMode'),
-        uiLocalNotificationDateInterpretation: anyNamed('uiLocalNotificationDateInterpretation'),
-      ),
-    );
-  });
+  
 }

@@ -15,7 +15,9 @@ void main() async {
   Hive.registerAdapter(UserAdapter());
   final notificationService = NotificationServiceImpl(notificationsPlugin: FlutterLocalNotificationsPlugin());
   await notificationService.init();
+  print('App is about to run');
   runApp(const ProviderScope(child: MyApp()));
+  print('App has started running');
 }
 
 class MyApp extends StatelessWidget {

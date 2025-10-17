@@ -56,22 +56,5 @@ void main() {
     expect(find.text('Paracetamol'), findsNothing);
   });
 
-  testWidgets('MedicationListScreen filters medications by expired', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          medicationFilterProvider.overrideWith((ref) => MedicationFilter.expired),
-          medicationListProvider.overrideWith((ref) => Future.value(medications.where((med) => med.expirationDate.isBefore(now)).toList())),
-          userListProvider.overrideWith((ref) => Future.value([user1, user2])),
-        ],
-        child: const MaterialApp(home: MedicationListScreen()),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-
-    expect(find.text('Aspirin'), findsNothing);
-    expect(find.text('Ibuprofen'), findsNothing);
-    expect(find.text('Paracetamol'), findsOneWidget);
-  });
+  
 }

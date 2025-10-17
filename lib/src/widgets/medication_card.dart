@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:kura/l10n/app_localizations.dart';
 import 'package:kura/src/models/medication.dart';
 import 'package:kura/src/providers.dart';
 import 'package:kura/src/theme.dart';
+import 'package:kura/src/models/user.dart'; // Import the User model
 
 class MedicationCard extends ConsumerWidget {
   final Medication medication;
@@ -14,7 +14,6 @@ class MedicationCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
     final userList = ref.watch(userListProvider);
 
     String expirationText;
@@ -49,7 +48,7 @@ class MedicationCard extends ConsumerWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
                   child: Row(
@@ -95,92 +94,109 @@ class MedicationCard extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      color: expirationColor,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      expirationText,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: expirationColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+                if (medication.userIds != null && medication.userIds!.isEmpty)
+                  _buildExpirationDate(expirationColor, expirationText, theme),
               ],
             ),
             const SizedBox(height: 8),
-            
-            if (medication.userIds != null && medication.userIds!.isNotEmpty)
-              userList.when(
-                data: (users) {
-                  final medicationUsers = users
-                      .where((user) => medication.userIds!.contains(user.id))
-                      .toList();
-                  return Row(
-                    children: [
-                      SizedBox(
-                        width: medicationUsers.length * 22.0,
-                        height: 22.0,
-                        child: Stack(
-                          children: medicationUsers.asMap().entries.map((
-                            entry,
-                          ) {
-                            final index = entry.key;
-                            final user = entry.value;
-                            return Positioned(
-                              left: index * 18.0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 1,
-                                  ),
-                                ),
-                                child: CircleAvatar(
-                                  radius: 10,
-                                  backgroundColor: getAvatarColor(user.name[0]),
-                                  child: Text(
-                                    user.name[0].toUpperCase(),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      if (medicationUsers.length == 1) const SizedBox(width: 4),
-                      
-                      Flexible(
-                        child: Text(
-                          medicationUsers.map((user) => user.name).join(', '),
-                          style: theme.textTheme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                        ),
-                      ),
-                    ],
-                  );
-                },
-                loading: () => const SizedBox(),
-                error: (error, stack) => const SizedBox(),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (medication.userIds != null && medication.userIds!.isNotEmpty) ...[
+                  _buildUserList(medication, userList, theme, getAvatarColor),
+                  const SizedBox(height: 8),
+                  _buildExpirationDate(expirationColor, expirationText, theme),
+                ],
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+
+ 
+
+  Widget _buildExpirationDate(
+    Color expirationColor,
+    String expirationText,
+    ThemeData theme,
+  ) {
+    return Row(
+        children: [
+          Icon(Icons.calendar_today, color: expirationColor, size: 16),
+          const SizedBox(width: 4),
+          Text(
+            expirationText,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: expirationColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+    );
+  }
+
+  Widget _buildUserList(
+    Medication medication,
+    AsyncValue<List<User>> userList,
+    ThemeData theme,
+    Color Function(String letter) getAvatarColor,
+  ) {
+    return userList.when(
+      data: (users) {
+        final medicationUsers = users
+            .where((user) => medication.userIds!.contains(user.id))
+            .toList();
+        return Row(
+          children: [
+            SizedBox(
+              width: medicationUsers.length * 22.0,
+              height: 22.0,
+              child: Stack(
+                children: medicationUsers.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final user = entry.value;
+                  return Positioned(
+                    left: index * 18.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1),
+                      ),
+                      child: CircleAvatar(
+                        radius: 10,
+                        backgroundColor: getAvatarColor(user.name[0]),
+                        child: Text(
+                          user.name[0].toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            if (medicationUsers.length == 1) const SizedBox(width: 4),
+            
+               Text(
+                medicationUsers.map((user) => user.name).join(', '),
+                style: theme.textTheme.bodyMedium!.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+              ),
+            
+          ],
+        );
+      },
+      loading: () => const SizedBox(),
+      error: (error, stack) => const SizedBox(),
     );
   }
 }

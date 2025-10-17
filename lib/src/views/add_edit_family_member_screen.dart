@@ -200,7 +200,7 @@ class _AddEditFamilyMemberScreenState
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: Text(l10n.save, style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold)),
+              child: Text(l10n.save, style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
             ),
             const SizedBox(height: 8),
           ],
