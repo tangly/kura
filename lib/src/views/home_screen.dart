@@ -5,6 +5,7 @@ import 'package:kura/src/providers.dart';
 import 'package:kura/src/theme.dart';
 import 'package:kura/src/views/family_member_list_screen.dart';
 import 'package:kura/src/views/medication_list_screen.dart';
+import 'package:kura/src/views/pending_notifications_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -42,6 +43,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Kura'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary,
+              ),
+              child: const Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.notifications),
+              title: const Text('Pending Notifications'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PendingNotificationsScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
@@ -57,14 +93,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             icon: const Icon(Icons.group),
             label: l10n.familyBottomBar,
           ),
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
             icon: const Icon(Icons.notifications),
             label: l10n.remindersBottomBar,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.settings),
             label: l10n.settingsBottomBar,
-          ),
+          ),*/
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: theme.colorScheme.primary,
@@ -84,143 +120,141 @@ class _HomeView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final medicationList = ref.watch(medicationListProvider);
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            height: 500,
-            decoration: BoxDecoration(
-              image: const DecorationImage(
-                image: AssetImage('design/header.png'),
-                fit: BoxFit.cover,
-              ),
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
+    return Stack(
+      children: [
+        Container(
+          height: 500,
+          decoration: BoxDecoration(
+            image: const DecorationImage(
+              image: AssetImage('design/header.png'),
+              fit: BoxFit.cover,
             ),
-            foregroundDecoration: BoxDecoration(
-              
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+            ),
+          ),
+          foregroundDecoration: BoxDecoration(
+            
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.center,
+          child: Container(
+            padding: const EdgeInsets.only(bottom: 50),
+            child: Text(
+              'Kura',
+              style: theme.textTheme.displayLarge?.copyWith(
+                color: const Color.fromARGB(255, 202, 133, 114),
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              padding: const EdgeInsets.only(bottom: 50),
-              child: Text(
-                'Kura',
-                style: theme.textTheme.displayLarge?.copyWith(
-                  color: const Color.fromARGB(255, 202, 133, 114),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 500),
+        ),
+        SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 500),
 
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () => onNavigate(1),
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: medicationList.when(
-                                loading: () => const Center(child: CircularProgressIndicator()),
-                                error: (err, stack) => const Center(child: Text('Error')),
-                                data: (medications) {
-                                  final expiredCount = medications.where((m) => m.expirationDate.isBefore(DateTime.now())).length;
-                                  final expiringSoonCount = medications.where((m) => m.expirationDate.isAfter(DateTime.now()) && m.expirationDate.isBefore(DateTime.now().add(const Duration(days: 30)))).length;
-                                  return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Center(child: Text('Medications', style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold))),
-                                      //const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            expiredCount.toString(),
-                                            style: theme.textTheme.headlineSmall?.copyWith(color: theme.colorScheme.error, fontWeight: FontWeight.bold),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          const Text('Expired'),
-                                        ],
-                                      ),
-                                      //const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            expiringSoonCount.toString(),
-                                            style: theme.textTheme.headlineSmall?.copyWith(color: kWarningColor, fontWeight: FontWeight.bold),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          const Text('Expiring Soon'),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () => onNavigate(1),
                         child: Card(
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              children: [
-                                Text('8:00 AM', style: theme.textTheme.headlineMedium),
-                                const SizedBox(height: 8),
-                                const Text('Next Dose'),
-                              ],
+                            child: medicationList.when(
+                              loading: () => const Center(child: CircularProgressIndicator()),
+                              error: (err, stack) => const Center(child: Text('Error')),
+                              data: (medications) {
+                                final expiredCount = medications.where((m) => m.expirationDate.isBefore(DateTime.now())).length;
+                                final expiringSoonCount = medications.where((m) => m.expirationDate.isAfter(DateTime.now()) && m.expirationDate.isBefore(DateTime.now().add(const Duration(days: 30)))).length;
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Center(child: Text('Medications', style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold))),
+                                    //const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          expiredCount.toString(),
+                                          style: theme.textTheme.headlineSmall?.copyWith(color: theme.colorScheme.error, fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        const Text('Expired'),
+                                      ],
+                                    ),
+                                    //const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          expiringSoonCount.toString(),
+                                          style: theme.textTheme.headlineSmall?.copyWith(color: kWarningColor, fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        const Text('Expiring Soon'),
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           ),
                         ),
                       ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              Text('8:00 AM', style: theme.textTheme.headlineMedium!),
+                              const SizedBox(height: 8),
+                              const Text('Next Dose'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Text('Upcoming Doses', style: theme.textTheme.titleLarge!),
+                const SizedBox(height: 16),
+                Card(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.medication),
+                        title: const Text('Aspirin'),
+                        subtitle: const Text('1 pill'),
+                        trailing: const Text('8:00 AM'),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.medication),
+                        title: const Text('Ibuprofen'),
+                        subtitle: const Text('2 pills'),
+                        trailing: const Text('12:00 PM'),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  Text('Upcoming Doses', style: theme.textTheme.titleLarge),
-                  const SizedBox(height: 16),
-                  Card(
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.medication),
-                          title: const Text('Aspirin'),
-                          subtitle: const Text('1 pill'),
-                          trailing: const Text('8:00 AM'),
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.medication),
-                          title: const Text('Ibuprofen'),
-                          subtitle: const Text('2 pills'),
-                          trailing: const Text('12:00 PM'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

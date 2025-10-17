@@ -32,8 +32,7 @@ class NotificationServiceImpl extends NotificationService {
     tz.initializeTimeZones();
   }
 
-  @override
-  Future<void> scheduleNotification({
+  Future<void> _scheduleNotification({
     required int id,
     required String title,
     required String body,
@@ -46,17 +45,16 @@ class NotificationServiceImpl extends NotificationService {
       tz.TZDateTime.from(scheduledDate, tz.local),
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'your channel id',
-          'your channel name',
-          channelDescription: 'your channel description',
+          'kura_channel_id',
+          'kura_channel_name',
+          channelDescription: 'Medication expiration notifications',
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
 
-  @override
-  Future<void> cancelNotification(int id) async {
+  Future<void> _cancelNotification(int id) async {
     await notificationsPlugin.cancel(id);
   }
 
@@ -64,7 +62,7 @@ class NotificationServiceImpl extends NotificationService {
   Future<void> cancelAllNotificationsForMedication(int medicationId) async {
     final notificationDays = [30, 15, 7, 3, 1];
     for (final days in notificationDays) {
-      await cancelNotification(medicationId * 100 + days);
+      await _cancelNotification(medicationId * 100 + days);
     }
   }
 
@@ -75,7 +73,7 @@ class NotificationServiceImpl extends NotificationService {
     for (final days in notificationDays) {
       final scheduledDate = medication.expirationDate.subtract(Duration(days: days));
       if (scheduledDate.isAfter(DateTime.now())) {
-        await scheduleNotification(
+        await _scheduleNotification(
           id: medication.id! * 100 + days,
           title: 'Medication Expiration',
           body: '${medication.name} will expire in $days days.',
@@ -83,5 +81,10 @@ class NotificationServiceImpl extends NotificationService {
         );
       }
     }
+  }
+
+  @override
+  Future<List<PendingNotificationRequest>> getPendingNotifications() {
+    return notificationsPlugin.pendingNotificationRequests();
   }
 }

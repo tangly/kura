@@ -59,3 +59,21 @@ final medicationListProvider = FutureProvider<List<Medication>>((ref) async {
       }
   }
 });
+
+final pendingNotificationsProvider = FutureProvider<(List<Medication>, Map<int, List<PendingNotificationRequest>>)>((ref) async {
+  final medications = await ref.watch(medicationListProvider.future);
+  final notificationService = ref.watch(notificationServiceProvider);
+  final pendingNotifications = await notificationService.getPendingNotifications();
+
+  final groupedNotifications = <int, List<PendingNotificationRequest>>{};
+  for (final notification in pendingNotifications) {
+    final medicationId = notification.id ~/ 100;
+    if (groupedNotifications.containsKey(medicationId)) {
+      groupedNotifications[medicationId]!.add(notification);
+    } else {
+      groupedNotifications[medicationId] = [notification];
+    }
+  }
+
+  return (medications, groupedNotifications);
+});
