@@ -16,6 +16,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedIndex = 0;
+  String _backgroundImage = 'design/header.png';
 
   late final List<Widget> _widgetOptions;
 
@@ -34,6 +35,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      switch (_selectedIndex) {
+        case 0:
+          _backgroundImage = 'design/header.png';
+          break;
+        case 2:
+          _backgroundImage = 'design/family-background.png';
+          break;
+        default:
+          _backgroundImage = 'design/header.png';
+      }
     });
   }
 
@@ -42,45 +53,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kura'),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
-              ),
-              child: const Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.notifications),
-              title: const Text('Pending Notifications'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PendingNotificationsScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Image.asset(
+            _backgroundImage,
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            //title: const Text('Kura'),
+          ),
+          drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                  ),
+                  child: const Text(
+                    'Menu',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.notifications),
+                  title: const Text('Pending Notifications'),
+                  onTap: () {
+                    Navigator.pop(context); // Close the drawer
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const PendingNotificationsScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          body: _widgetOptions.elementAt(_selectedIndex),
+          bottomNavigationBar: BottomNavigationBar(
+            items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: const Icon(Icons.home),
             label: l10n.homeBottomBar,
@@ -108,6 +131,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         showUnselectedLabels: true,
         onTap: _onItemTapped,
       ),
+    ),
+    ],
     );
   }
 }
@@ -122,38 +147,18 @@ class _HomeView extends ConsumerWidget {
     final medicationList = ref.watch(medicationListProvider);
     return Stack(
       children: [
-        Container(
-          height: 500,
-          decoration: BoxDecoration(
-            image: const DecorationImage(
-              image: AssetImage('design/header.png'),
-              fit: BoxFit.cover,
-            ),
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
-            ),
-          ),
-          foregroundDecoration: BoxDecoration(
-            
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
-            ),
-          ),
-        ),
         Align(
-          alignment: Alignment.center,
-          child: Container(
-            padding: const EdgeInsets.only(bottom: 50),
-            child: Text(
+          alignment: Alignment.topCenter,
+          child: 
+            //padding: const EdgeInsets.only(bottom: 50),
+             Text(
               'Kura',
               style: theme.textTheme.displayLarge?.copyWith(
                 color: const Color.fromARGB(255, 202, 133, 114),
                 fontWeight: FontWeight.bold,
               ),
             ),
-          ),
+          
         ),
         SingleChildScrollView(
           child: Padding(
@@ -162,7 +167,6 @@ class _HomeView extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 500),
-
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -173,21 +177,40 @@ class _HomeView extends ConsumerWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: medicationList.when(
-                              loading: () => const Center(child: CircularProgressIndicator()),
-                              error: (err, stack) => const Center(child: Text('Error')),
+                              loading: () =>
+                                  const Center(child: CircularProgressIndicator()),
+                              error: (err, stack) =>
+                                  const Center(child: Text('Error')),
                               data: (medications) {
-                                final expiredCount = medications.where((m) => m.expirationDate.isBefore(DateTime.now())).length;
-                                final expiringSoonCount = medications.where((m) => m.expirationDate.isAfter(DateTime.now()) && m.expirationDate.isBefore(DateTime.now().add(const Duration(days: 30)))).length;
+                                final expiredCount = medications
+                                    .where((m) => m.expirationDate
+                                        .isBefore(DateTime.now()))
+                                    .length;
+                                final expiringSoonCount = medications
+                                    .where((m) =>
+                                        m.expirationDate.isAfter(DateTime.now()) &&
+                                        m.expirationDate.isBefore(DateTime.now()
+                                            .add(const Duration(days: 30))))
+                                    .length;
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Center(child: Text('Medications', style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold))),
+                                    Center(
+                                        child: Text('Medications',
+                                            style: theme.textTheme.titleMedium!
+                                                .copyWith(
+                                                    fontWeight:
+                                                        FontWeight.bold))),
                                     //const SizedBox(height: 8),
                                     Row(
                                       children: [
                                         Text(
                                           expiredCount.toString(),
-                                          style: theme.textTheme.headlineSmall?.copyWith(color: theme.colorScheme.error, fontWeight: FontWeight.bold),
+                                          style: theme.textTheme.headlineSmall
+                                              ?.copyWith(
+                                                  color:
+                                                      theme.colorScheme.error,
+                                                  fontWeight: FontWeight.bold),
                                         ),
                                         const SizedBox(width: 8),
                                         const Text('Expired'),
@@ -198,7 +221,10 @@ class _HomeView extends ConsumerWidget {
                                       children: [
                                         Text(
                                           expiringSoonCount.toString(),
-                                          style: theme.textTheme.headlineSmall?.copyWith(color: kWarningColor, fontWeight: FontWeight.bold),
+                                          style: theme.textTheme.headlineSmall
+                                              ?.copyWith(
+                                                  color: kWarningColor,
+                                                  fontWeight: FontWeight.bold),
                                         ),
                                         const SizedBox(width: 8),
                                         const Text('Expiring Soon'),
@@ -219,7 +245,8 @@ class _HomeView extends ConsumerWidget {
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             children: [
-                              Text('8:00 AM', style: theme.textTheme.headlineMedium!),
+                              Text('8:00 AM',
+                                  style: theme.textTheme.headlineMedium!),
                               const SizedBox(height: 8),
                               const Text('Next Dose'),
                             ],

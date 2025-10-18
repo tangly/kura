@@ -18,15 +18,20 @@ class MedicationListScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text(l10n.medications, style: theme.textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(
+          l10n.medications,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, size: 32, color: Colors.white),
+            icon: const Icon(Icons.add, size: 32),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -37,109 +42,136 @@ class MedicationListScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('design/header.png'),
-                fit: BoxFit.cover,
+      body: Column(
+          children: [
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
               ),
-            ),
-          ),
-          Container(
-            color: Colors.black.withOpacity(0.1),
-          ),
-          Column(
-            children: [
-              const SizedBox(height: 120),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 0.0),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            ref.read(medicationFilterProvider.notifier).state = MedicationFilter.all;
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: filter == MedicationFilter.all ? theme.colorScheme.primary : Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 4.0,
+                  vertical: 0.0,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          ref.read(medicationFilterProvider.notifier).state =
+                              MedicationFilter.all;
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: filter == MedicationFilter.all
+                              ? theme.colorScheme.primary
+                              : Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Text(l10n.all, style: TextStyle(fontSize: 12, color: filter == MedicationFilter.all ? Colors.white : theme.textTheme.bodyMedium?.color)),
                         ),
-                        userList.when(
-                          data: (users) {
-                            return Row(
-                              children: users.map((user) {
-                                final isSelected = selectedUser == user && filter == MedicationFilter.user;
-                                return TextButton(
-                                  onPressed: () {
-                                    ref.read(medicationFilterProvider.notifier).state = MedicationFilter.user;
-                                    ref.read(selectedUserProvider.notifier).state = user;
-                                  },
-                                  style: TextButton.styleFrom(
-                                    backgroundColor: isSelected ? theme.colorScheme.primary : Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
+                        child: Text(
+                          l10n.all,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: filter == MedicationFilter.all
+                                ? Colors.white
+                                : theme.textTheme.bodyMedium?.color,
+                          ),
+                        ),
+                      ),
+                      userList.when(
+                        data: (users) {
+                          return Row(
+                            children: users.map((user) {
+                              final isSelected = selectedUser == user &&
+                                  filter == MedicationFilter.user;
+                              return TextButton(
+                                onPressed: () {
+                                  ref
+                                      .read(
+                                        medicationFilterProvider.notifier,
+                                      )
+                                      .state = MedicationFilter.user;
+                                  ref
+                                      .read(
+                                        selectedUserProvider.notifier,
+                                      )
+                                      .state = user;
+                                },
+                                style: TextButton.styleFrom(
+                                  backgroundColor: isSelected
+                                      ? theme.colorScheme.primary
+                                      : Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      20,
                                     ),
                                   ),
-                                  child: Text(user.name, style: TextStyle(fontSize: 12, color: isSelected ? Colors.white : theme.textTheme.bodyMedium?.color)),
-                                );
-                              }).toList(),
-                            );
-                          },
-                          loading: () => const SizedBox(),
-                          error: (error, stackTrace) => const SizedBox(),
-                        ),
-                      ],
-                    ),
+                                ),
+                                child: Text(
+                                  user.name,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : theme.textTheme.bodyMedium?.color,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                        loading: () => const SizedBox(),
+                        error: (error, stackTrace) => const SizedBox(),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              Expanded(
-                child: medicationList.when(
-                  data: (medications) => RefreshIndicator(
-                    onRefresh: () => ref.refresh(medicationListProvider.future),
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      itemCount: medications.length,
-                      itemBuilder: (context, index) {
-                        final medication = medications[index];
-                        return InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    AddEditMedicationScreen(medication: medication),
+            ),
+            Expanded(
+              child: medicationList.when(
+                data: (medications) => RefreshIndicator(
+                  onRefresh: () => ref.refresh(medicationListProvider.future),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    itemCount: medications.length,
+                    itemBuilder: (context, index) {
+                      final medication = medications[index];
+                      return InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => AddEditMedicationScreen(
+                                medication: medication,
                               ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: MedicationCard(medication: medication),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 4.0,
                           ),
-                        );
-                      },
-                    ),
+                          child: MedicationCard(medication: medication),
+                        ),
+                      );
+                    },
                   ),
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (error, stackTrace) => Center(child: Text('Error: $error')),
                 ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stackTrace) =>
+                    Center(child: Text('Error: $error')),
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
       ),
     );
   }

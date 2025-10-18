@@ -14,11 +14,14 @@ class FamilyMemberListScreen extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(l10n.familyBottomBar, style: theme.textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(l10n.familyBottomBar,
+            style: theme.textTheme.titleLarge
+                ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
           IconButton(
@@ -33,21 +36,15 @@ class FamilyMemberListScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('design/family-background.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: userList.when(
+      body: userList.when(
         data: (users) {
           return ListView.builder(
             itemCount: users.length,
             itemBuilder: (context, index) {
               final user = users[index];
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -58,7 +55,8 @@ class FamilyMemberListScreen extends ConsumerWidget {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => AddEditFamilyMemberScreen(user: user),
+                        builder: (context) =>
+                            AddEditFamilyMemberScreen(user: user),
                       ),
                     );
                   },
@@ -68,8 +66,8 @@ class FamilyMemberListScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(l10n.couldNotLoadUsers)),
-      ),
+        error: (error, stack) =>
+            Center(child: Text(l10n.couldNotLoadUsers)),
       ),
     );
   }
