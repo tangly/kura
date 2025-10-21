@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "216796983619",
+    "project_id": "kura-app-8f1f2",
+    "storage_bucket": "kura-app-8f1f2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:216796983619:android:472f739397a793507efff6",
+        "android_client_info": {
+          "package_name": "com.app.kura"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPvBXz37GyEbe93V8qnRjk02OkbBMYyW4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
