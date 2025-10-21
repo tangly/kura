@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Medication Manager',
+      title: 'KURA',
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
