@@ -49,4 +49,5 @@ google-services.json
 GoogleService-Info.plist
 firestore.rules
 firebase.json
+firebase_options.dart
 **/.*
