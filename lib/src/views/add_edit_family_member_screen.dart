@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kura/l10n/app_localizations.dart';
-import 'package:kura/src/models/user.dart';
+import 'package:kura/src/models/family_member.dart';
 import 'package:kura/src/providers.dart';
 
 class AddEditFamilyMemberScreen extends ConsumerStatefulWidget {
-  final User? user;
+  final FamilyMember? familyMember;
+  final String familyId;
 
-  const AddEditFamilyMemberScreen({super.key, this.user});
+  const AddEditFamilyMemberScreen(
+      {super.key, this.familyMember, required this.familyId});
 
   @override
   ConsumerState<AddEditFamilyMemberScreen> createState() =>
@@ -20,19 +23,18 @@ class _AddEditFamilyMemberScreenState
   late final TextEditingController _nameController;
   late final TextEditingController _ageController;
   late final TextEditingController _weightController;
-  late final TextEditingController _allergiesController;
   late final TextEditingController _notesController;
-  User? _user;
+  FamilyMember? _familyMember;
 
   @override
   void initState() {
     super.initState();
-    _user = widget.user;
-    _nameController = TextEditingController(text: _user?.name);
-    _ageController = TextEditingController(text: _user?.age?.toString());
-    _weightController = TextEditingController(text: _user?.weight?.toString());
-    _allergiesController = TextEditingController(text: _user?.allergies);
-    _notesController = TextEditingController(text: _user?.notes);
+    _familyMember = widget.familyMember;
+    _nameController = TextEditingController(text: _familyMember?.name);
+    _ageController = TextEditingController(text: _familyMember?.age.toString());
+    _weightController =
+        TextEditingController(text: _familyMember?.weight.toString());
+    _notesController = TextEditingController(text: _familyMember?.notes);
   }
 
   @override
@@ -40,7 +42,6 @@ class _AddEditFamilyMemberScreenState
     _nameController.dispose();
     _ageController.dispose();
     _weightController.dispose();
-    _allergiesController.dispose();
     _notesController.dispose();
     super.dispose();
   }
@@ -54,22 +55,25 @@ class _AddEditFamilyMemberScreenState
 
   void _saveUser() async {
     if (_formKey.currentState!.validate()) {
-      final userService = ref.read(userServiceProvider);
-      final user = User(
+      final familyService = ref.read(familyServiceProvider);
+      final currentUser = ref.read(authServiceProvider).firebaseAuth.currentUser;
+      final member = FamilyMember(
+        id: _familyMember?.id ?? '',
         name: _capitalize(_nameController.text),
-        age: int.tryParse(_ageController.text),
-        weight: double.tryParse(_weightController.text),
-        allergies: _allergiesController.text,
+        age: int.tryParse(_ageController.text) ?? 0,
+        weight: int.tryParse(_weightController.text) ?? 0,
         notes: _notesController.text,
+        createdAt: _familyMember?.createdAt ?? Timestamp.now(),
+        createdBy: _familyMember?.createdBy ?? currentUser!.uid,
       );
-      if (_user == null) {
-        await userService.addUser(user);
+      if (_familyMember == null) {
+        await familyService.addFamilyMember(widget.familyId, member);
       } else {
-        final newUser = user.copyWith(id: _user!.id);
-        await userService.updateUser(newUser);
+        await familyService.updateFamilyMember(
+            widget.familyId, _familyMember!.id, member.toJson());
       }
-      
-      final _ = await ref.refresh(userListProvider.future);
+
+      // final _ = await ref.refresh(userListProvider.future);
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -97,9 +101,10 @@ class _AddEditFamilyMemberScreenState
     );
 
     if (confirmed == true) {
-      final userService = ref.read(userServiceProvider);
-      await userService.deleteUser(_user!.id);
-      final _ = await ref.refresh(userListProvider.future);
+      final familyService = ref.read(familyServiceProvider);
+      await familyService.deleteFamilyMember(
+          widget.familyId, _familyMember!.id);
+      // final _ = await ref.refresh(userListProvider.future);
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -122,9 +127,11 @@ class _AddEditFamilyMemberScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_user == null ? l10n.addFamilyMember : l10n.editFamilyMember),
+        title: Text(_familyMember == null
+            ? l10n.addFamilyMember
+            : l10n.editFamilyMember),
         actions: [
-          if (_user != null)
+          if (_familyMember != null)
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: _deleteUser,
@@ -165,13 +172,6 @@ class _AddEditFamilyMemberScreenState
                 controller: _weightController,
                 decoration: inputDecoration.copyWith(hintText: l10n.eg70_5),
                 keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 16),
-              Text(l10n.allergies),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _allergiesController,
-                decoration: inputDecoration.copyWith(hintText: l10n.egPeanutsPollen),
               ),
               const SizedBox(height: 16),
               Text(l10n.notes),

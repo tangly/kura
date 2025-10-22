@@ -1,18 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kura/l10n/app_localizations.dart';
-import 'package:kura/src/models/medication.dart';
-import 'package:kura/src/models/user.dart';
+import 'package:kura/src/router.dart';
 import 'package:kura/src/services/notification_service_impl.dart';
 import 'package:kura/src/theme.dart';
-import 'package:kura/src/views/home_screen.dart';
 
 void main() async {
-  await Hive.initFlutter();
-  Hive.registerAdapter(MedicationAdapter());
-  Hive.registerAdapter(UserAdapter());
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   final notificationService = NotificationServiceImpl(notificationsPlugin: FlutterLocalNotificationsPlugin());
   await notificationService.init();
   print('App is about to run');
@@ -20,19 +17,21 @@ void main() async {
   print('App has started running');
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
+    return MaterialApp.router(
       title: 'KURA',
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const HomeScreen(),
+      routerConfig: router,
     );
   }
 }

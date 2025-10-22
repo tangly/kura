@@ -1,8 +1,9 @@
-import 'package:kura/src/models/medication.dart';
+import 'package:kura/src/models/family_medication.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kura/src/services/notification_service.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+
 
 class NotificationServiceImpl extends NotificationService {
   final FlutterLocalNotificationsPlugin notificationsPlugin;
@@ -59,22 +60,22 @@ class NotificationServiceImpl extends NotificationService {
   }
 
   @override
-  Future<void> cancelAllNotificationsForMedication(int medicationId) async {
+  Future<void> cancelAllNotificationsForMedication(String medicationId) async {
     final notificationDays = [30, 15, 7, 3, 1];
     for (final days in notificationDays) {
-      await _cancelNotification(medicationId * 100 + days);
+      await _cancelNotification(_generateNotificationId(medicationId, days));
     }
   }
 
   @override
-  Future<void> scheduleNotificationsForMedication(Medication medication) async {
+  Future<void> scheduleNotificationsForMedication(FamilyMedication medication) async {
     await cancelAllNotificationsForMedication(medication.id!);
     final notificationDays = [30, 15, 7, 3, 1];
     for (final days in notificationDays) {
       final scheduledDate = medication.expirationDate.subtract(Duration(days: days));
       if (scheduledDate.isAfter(DateTime.now())) {
         await _scheduleNotification(
-          id: medication.id! * 100 + days,
+          id: _generateNotificationId(medication.id!, days),
           title: 'Medication Expiration',
           body: '${medication.name} will expire in $days days.',
           scheduledDate: scheduledDate,
@@ -86,5 +87,10 @@ class NotificationServiceImpl extends NotificationService {
   @override
   Future<List<PendingNotificationRequest>> getPendingNotifications() {
     return notificationsPlugin.pendingNotificationRequests();
+  }
+
+  int _generateNotificationId(String medicationId, int daysBefore) {
+    final intId = int.tryParse(medicationId) ?? medicationId.hashCode;
+    return intId + daysBefore;
   }
 }

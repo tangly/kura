@@ -9,7 +9,8 @@ class FamilyMemberListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userList = ref.watch(userListProvider);
+    final familyMembers = ref.watch(familyMembersProvider);
+    final currentUser = ref.watch(currentUserProvider);
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -29,19 +30,20 @@ class FamilyMemberListScreen extends ConsumerWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => const AddEditFamilyMemberScreen(),
+                  builder: (context) => AddEditFamilyMemberScreen(
+                      familyId: currentUser.value!.families.first),
                 ),
               );
             },
           ),
         ],
       ),
-      body: userList.when(
-        data: (users) {
+      body: familyMembers.when(
+        data: (members) {
           return ListView.builder(
-            itemCount: users.length,
+            itemCount: members.length,
             itemBuilder: (context, index) {
-              final user = users[index];
+              final member = members[index];
               return Card(
                 margin:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -50,13 +52,14 @@ class FamilyMemberListScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
-                  title: Text(user.name),
+                  title: Text(member.name),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
-                            AddEditFamilyMemberScreen(user: user),
+                        builder: (context) => AddEditFamilyMemberScreen(
+                            familyMember: member,
+                            familyId: currentUser.value!.families.first),
                       ),
                     );
                   },

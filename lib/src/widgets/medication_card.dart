@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:kura/src/models/medication.dart';
+import 'package:kura/src/models/family_medication.dart';
+import 'package:kura/src/models/family_member.dart';
 import 'package:kura/src/providers.dart';
 import 'package:kura/src/theme.dart';
-import 'package:kura/src/models/user.dart'; // Import the User model
+import 'package:kura/src/models/app_user.dart';
 
 class MedicationCard extends ConsumerWidget {
-  final Medication medication;
+  final FamilyMedication medication;
 
   const MedicationCard({super.key, required this.medication});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final userList = ref.watch(userListProvider);
+    final memberList = ref.watch(familyMembersProvider);
 
     String expirationText;
     Color expirationColor;
@@ -94,7 +95,7 @@ class MedicationCard extends ConsumerWidget {
                     ],
                   ),
                 ),
-                if (medication.userIds != null && medication.userIds!.isEmpty)
+                if (medication.members != null && medication.members!.isEmpty)
                   _buildExpirationDate(expirationColor, expirationText, theme),
               ],
             ),
@@ -102,8 +103,8 @@ class MedicationCard extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (medication.userIds != null && medication.userIds!.isNotEmpty) ...[
-                  _buildUserList(medication, userList, theme, getAvatarColor),
+                if (medication.members != null && medication.members!.isNotEmpty) ...[
+                  _buildUserList(medication, memberList, theme, getAvatarColor),
                   const SizedBox(height: 8),
                   _buildExpirationDate(expirationColor, expirationText, theme),
                 ],
@@ -138,25 +139,25 @@ class MedicationCard extends ConsumerWidget {
   }
 
   Widget _buildUserList(
-    Medication medication,
-    AsyncValue<List<User>> userList,
+    FamilyMedication medication,
+    AsyncValue<List<FamilyMember>> memberList,
     ThemeData theme,
     Color Function(String letter) getAvatarColor,
   ) {
-    return userList.when(
-      data: (users) {
-        final medicationUsers = users
-            .where((user) => medication.userIds!.contains(user.id))
+    return memberList.when(
+      data: (members) {
+        final medicationMembers = members
+            .where((member) => medication.members?.contains(member.id) ?? false)
             .toList();
         return Row(
           children: [
             SizedBox(
-              width: medicationUsers.length * 22.0,
+              width: medicationMembers.length * 22.0,
               height: 22.0,
               child: Stack(
-                children: medicationUsers.asMap().entries.map((entry) {
+                children: medicationMembers.asMap().entries.map((entry) {
                   final index = entry.key;
-                  final user = entry.value;
+                  final member = entry.value;
                   return Positioned(
                     left: index * 18.0,
                     child: Container(
@@ -166,9 +167,9 @@ class MedicationCard extends ConsumerWidget {
                       ),
                       child: CircleAvatar(
                         radius: 10,
-                        backgroundColor: getAvatarColor(user.name[0]),
+                        backgroundColor: getAvatarColor(member.name[0]),
                         child: Text(
-                          user.name[0].toUpperCase(),
+                          member.name[0].toUpperCase(),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -181,12 +182,11 @@ class MedicationCard extends ConsumerWidget {
                 }).toList(),
               ),
             ),
-            if (medicationUsers.length == 1) const SizedBox(width: 4),
-            
-               Text(
-                medicationUsers.map((user) => user.name).join(', '),
-                style: theme.textTheme.bodyMedium!.copyWith(
-                  fontWeight: FontWeight.bold,
+            if (medicationMembers.length == 1) const SizedBox(width: 4),
+            Text(
+              medicationMembers.map((member) => member.name).join(', '),
+              style: theme.textTheme.bodyMedium!.copyWith(
+                fontWeight: FontWeight.bold,
                 ),
                 overflow: TextOverflow.ellipsis,
                 softWrap: false,

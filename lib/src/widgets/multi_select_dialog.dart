@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:kura/src/models/user.dart';
+import 'package:kura/src/models/family_member.dart';
 
 class MultiSelectDialog extends StatefulWidget {
-  final List<User> users;
-  final List<int> selectedUserIds;
+  final List<FamilyMember> members;
+  final List<String> selectedUserIds;
 
   const MultiSelectDialog({
     super.key,
-    required this.users,
+    required this.members,
     required this.selectedUserIds,
   });
 
@@ -16,7 +16,7 @@ class MultiSelectDialog extends StatefulWidget {
 }
 
 class _MultiSelectDialogState extends State<MultiSelectDialog> {
-  late final List<int> _selectedUserIds;
+  late final List<String> _selectedUserIds;
 
   @override
   void initState() {
@@ -30,16 +30,16 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
       title: const Text('Select Users'),
       content: SingleChildScrollView(
         child: ListBody(
-          children: widget.users.map((user) {
+          children: widget.members.map((member) {
             return CheckboxListTile(
-              value: _selectedUserIds.contains(user.id),
-              title: Text(user.name),
+              value: _selectedUserIds.contains(member.id),
+              title: Text(member.name),
               onChanged: (isChecked) {
                 setState(() {
                   if (isChecked!) {
-                    _selectedUserIds.add(user.id!);
+                    _selectedUserIds.add(member.id);
                   } else {
-                    _selectedUserIds.remove(user.id!);
+                    _selectedUserIds.remove(member.id);
                   }
                 });
               },

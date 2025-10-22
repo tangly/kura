@@ -27,8 +27,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _HomeView(onNavigate: _onItemTapped),
       const MedicationListScreen(),
       const FamilyMemberListScreen(),
-      const Scaffold(body: Center(child: Text('Reminders'))),
-      const Scaffold(body: Center(child: Text('Settings'))),
+      //const Scaffold(body: Center(child: Text('Reminders'))),
+      //const Scaffold(body: Center(child: Text('Settings'))),
     ];
   }
 
@@ -56,10 +56,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Stack(
       children: [
         Positioned.fill(
-          child: Image.asset(
-            _backgroundImage,
-            fit: BoxFit.cover,
-          ),
+          child: Image.asset(_backgroundImage, fit: BoxFit.cover),
         ),
         Scaffold(
           backgroundColor: Colors.transparent,
@@ -69,54 +66,64 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //title: const Text('Kura'),
           ),
           drawer: Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary,
-                  ),
-                  child: const Text(
-                    'Menu',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.notifications),
-                  title: const Text('Pending Notifications'),
-                  onTap: () {
-                    Navigator.pop(context); // Close the drawer
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            const PendingNotificationsScreen(),
+            child: Consumer(
+              builder: (context, ref, child) {
+                return ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    DrawerHeader(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
                       ),
-                    );
-                  },
-                ),
-              ],
+                      child: const Text(
+                        'Menu',
+                        style: TextStyle(color: Colors.white, fontSize: 24),
+                      ),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.notifications),
+                      title: const Text('Pending Notifications'),
+                      onTap: () {
+                        Navigator.pop(context); // Close the drawer
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const PendingNotificationsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.logout),
+                      title: const Text('Logoff'),
+                      onTap: () {
+                        ref.read(authServiceProvider).signOut();
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           body: _widgetOptions.elementAt(_selectedIndex),
           bottomNavigationBar: BottomNavigationBar(
             items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: l10n.homeBottomBar,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.medication),
-            label: l10n.medicationsBottomBar,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.group),
-            label: l10n.familyBottomBar,
-          ),
-          /*BottomNavigationBarItem(
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.home),
+                label: l10n.homeBottomBar,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.medication),
+                label: l10n.medicationsBottomBar,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(Icons.group),
+                label: l10n.familyBottomBar,
+              ),
+              /*BottomNavigationBarItem(
             icon: const Icon(Icons.notifications),
             label: l10n.remindersBottomBar,
           ),
@@ -124,15 +131,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             icon: const Icon(Icons.settings),
             label: l10n.settingsBottomBar,
           ),*/
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: theme.colorScheme.primary,
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
-        onTap: _onItemTapped,
-      ),
-    ),
-    ],
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: theme.colorScheme.primary,
+            unselectedItemColor: Colors.grey,
+            showUnselectedLabels: true,
+            onTap: _onItemTapped,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -149,16 +156,15 @@ class _HomeView extends ConsumerWidget {
       children: [
         Align(
           alignment: Alignment.topCenter,
-          child: 
-            //padding: const EdgeInsets.only(bottom: 50),
-             Text(
-              'Kura',
-              style: theme.textTheme.displayLarge?.copyWith(
-                color: const Color.fromARGB(255, 202, 133, 114),
-                fontWeight: FontWeight.bold,
+          child:
+              //padding: const EdgeInsets.only(bottom: 50),
+              Text(
+                'Kura',
+                style: theme.textTheme.displayLarge?.copyWith(
+                  color: const Color.fromARGB(255, 202, 133, 114),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          
         ),
         SingleChildScrollView(
           child: Padding(
@@ -177,30 +183,48 @@ class _HomeView extends ConsumerWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: medicationList.when(
-                              loading: () =>
-                                  const Center(child: CircularProgressIndicator()),
+                              loading: () => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
                               error: (err, stack) =>
                                   const Center(child: Text('Error')),
                               data: (medications) {
                                 final expiredCount = medications
-                                    .where((m) => m.expirationDate
-                                        .isBefore(DateTime.now()))
+                                    .where(
+                                      (m) =>
+                                          m.expirationDate?.isBefore(
+                                            DateTime.now(),
+                                          ) ??
+                                          false,
+                                    )
                                     .length;
                                 final expiringSoonCount = medications
-                                    .where((m) =>
-                                        m.expirationDate.isAfter(DateTime.now()) &&
-                                        m.expirationDate.isBefore(DateTime.now()
-                                            .add(const Duration(days: 30))))
+                                    .where(
+                                      (m) =>
+                                          (m.expirationDate?.isAfter(
+                                                DateTime.now(),
+                                              ) ??
+                                              false) &&
+                                          (m.expirationDate?.isBefore(
+                                                DateTime.now().add(
+                                                  const Duration(days: 30),
+                                                ),
+                                              ) ??
+                                              false),
+                                    )
                                     .length;
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Center(
-                                        child: Text('Medications',
-                                            style: theme.textTheme.titleMedium!
-                                                .copyWith(
-                                                    fontWeight:
-                                                        FontWeight.bold))),
+                                      child: Text(
+                                        'Medications',
+                                        style: theme.textTheme.titleMedium!
+                                            .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                    ),
                                     //const SizedBox(height: 8),
                                     Row(
                                       children: [
@@ -208,9 +232,9 @@ class _HomeView extends ConsumerWidget {
                                           expiredCount.toString(),
                                           style: theme.textTheme.headlineSmall
                                               ?.copyWith(
-                                                  color:
-                                                      theme.colorScheme.error,
-                                                  fontWeight: FontWeight.bold),
+                                                color: theme.colorScheme.error,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                         ),
                                         const SizedBox(width: 8),
                                         const Text('Expired'),
@@ -223,8 +247,9 @@ class _HomeView extends ConsumerWidget {
                                           expiringSoonCount.toString(),
                                           style: theme.textTheme.headlineSmall
                                               ?.copyWith(
-                                                  color: kWarningColor,
-                                                  fontWeight: FontWeight.bold),
+                                                color: kWarningColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                         ),
                                         const SizedBox(width: 8),
                                         const Text('Expiring Soon'),
@@ -245,8 +270,10 @@ class _HomeView extends ConsumerWidget {
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             children: [
-                              Text('8:00 AM',
-                                  style: theme.textTheme.headlineMedium!),
+                              Text(
+                                '8:00 AM',
+                                style: theme.textTheme.headlineMedium!,
+                              ),
                               const SizedBox(height: 8),
                               const Text('Next Dose'),
                             ],

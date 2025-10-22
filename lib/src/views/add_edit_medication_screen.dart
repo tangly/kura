@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:kura/l10n/app_localizations.dart';
-import 'package:kura/src/models/medication.dart';
+import 'package:kura/src/models/family_medication.dart';
 import 'package:kura/src/providers.dart';
 import 'package:kura/src/widgets/multi_select_dialog.dart';
 
 class AddEditMedicationScreen extends ConsumerStatefulWidget {
-  final Medication? medication;
+  final FamilyMedication? medication;
+  final String familyId;
 
-  const AddEditMedicationScreen({super.key, this.medication});
+  const AddEditMedicationScreen({super.key, this.medication, required this.familyId});
 
   @override
   ConsumerState<AddEditMedicationScreen> createState() =>
@@ -24,20 +25,20 @@ class _AddEditMedicationScreenState
   late final TextEditingController _reasonController;
   late final TextEditingController _expirationDateController;
   late DateTime _expirationDate;
-  Medication? _medication;
-  List<int> _selectedUserIds = [];
+  FamilyMedication? _medication;
+  List<String> _selectedMembers = [];
 
   @override
   void initState() {
-    super.initState();
-    _medication = widget.medication;
-    _nameController = TextEditingController(text: _medication?.name);
-    _dosageController = TextEditingController(text: _medication?.dosage);
-    _reasonController = TextEditingController(text: _medication?.reason);
-    _expirationDate = _medication?.expirationDate ?? DateTime.now();
-    _expirationDateController = TextEditingController(
-        text: DateFormat('MM/yyyy').format(_expirationDate));
-    _selectedUserIds = _medication?.userIds ?? [];
+  super.initState();
+  _medication = widget.medication;
+  _nameController = TextEditingController(text: _medication?.name);
+  _dosageController = TextEditingController(text: _medication?.dosage);
+  _reasonController = TextEditingController(text: _medication?.reason);
+  _expirationDate = _medication?.expirationDate ?? DateTime.now();
+  _expirationDateController = TextEditingController(
+    text: DateFormat('MM/yyyy').format(_expirationDate));
+  _selectedMembers = _medication?.members ?? [];
   }
 
   @override
@@ -68,26 +69,23 @@ class _AddEditMedicationScreenState
 
   void _saveMedication() async {
     if (_formKey.currentState!.validate()) {
-      Medication medication = Medication(
+      FamilyMedication medication = FamilyMedication(
         id: _medication?.id,
         name: _nameController.text,
         dosage: _dosageController.text,
         expirationDate: _expirationDate,
-        userIds: _selectedUserIds,
+        members: _selectedMembers,
         reason: _reasonController.text,
       );
       if (_medication?.id == null) {
-        medication = await ref.read(medicationServiceProvider).addMedication(medication);
-        setState(() {
-          _medication = medication;
-        });
+        await ref.read(familyServiceProvider).addFamilyMedication(widget.familyId,medication);
       } else {
-        await ref.read(medicationServiceProvider).updateMedication(medication);
+        await ref.read(familyServiceProvider).updateFamilyMedication(widget.familyId, medication.id!, medication.toJson());
       }
 
       final notificationService = ref.read(notificationServiceProvider);
       await notificationService.scheduleNotificationsForMedication(medication);
-      final _ = await ref.refresh(medicationListProvider.future);
+      //final _ = await ref.refresh(medicationListProvider.future);
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -116,7 +114,7 @@ class _AddEditMedicationScreenState
 
     if (confirmed == true) {
       await ref.read(notificationServiceProvider).cancelAllNotificationsForMedication(_medication!.id!);
-      await ref.read(medicationServiceProvider).deleteMedication(_medication!.id!);
+      await ref.read(familyServiceProvider).deleteFamilyMedication(widget.familyId,_medication!.id!);
       final _ = await ref.refresh(medicationListProvider.future);
       if (mounted) {
         Navigator.of(context).pop();
@@ -137,7 +135,7 @@ class _AddEditMedicationScreenState
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );
-    final userList = ref.watch(userListProvider);
+    final membersList = ref.watch(familyMembersProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -181,31 +179,31 @@ class _AddEditMedicationScreenState
               const SizedBox(height: 16),
               Text(l10n.forMedication),
               const SizedBox(height: 8),
-              userList.when(
-                data: (users) {
+              membersList.when(
+                data: (members) {
                   return InkWell(
                     onTap: () async {
-                      final selectedUserIds = await showDialog<List<int>>(
+                      final selectedMemberIds = await showDialog<List<String>>(
                         context: context,
                         builder: (context) => MultiSelectDialog(
-                          users: users,
-                          selectedUserIds: _selectedUserIds,
+                          members: members,
+                          selectedUserIds: _selectedMembers,
                         ),
                       );
-                      if (selectedUserIds != null) {
+                      if (selectedMemberIds != null) {
                         setState(() {
-                          _selectedUserIds = selectedUserIds;
+                          _selectedMembers = selectedMemberIds;
                         });
                       }
                     },
                     child: InputDecorator(
                       decoration: inputDecoration,
                       child: Text(
-                        _selectedUserIds.isEmpty
+                        _selectedMembers.isEmpty
                             ? l10n.selectFamilyMember
-                            : users
-                                .where((user) => _selectedUserIds.contains(user.id))
-                                .map((user) => user.name)
+                            : members
+                                .where((member) => _selectedMembers.contains(member.id))
+                                .map((member) => member.name)
                                 .join(', '),
                       ),
                     ),

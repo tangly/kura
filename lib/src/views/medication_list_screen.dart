@@ -10,14 +10,18 @@ class MedicationListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final medicationList = ref.watch(medicationListProvider);
-    final userList = ref.watch(userListProvider);
-    final selectedUser = ref.watch(selectedUserProvider);
-    final filter = ref.watch(medicationFilterProvider);
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
+  final medicationList = ref.watch(medicationListProvider);
+  final userList = ref.watch(familyMembersProvider);
+  final selectedMember = ref.watch(selectedMemberProvider);
+  final filter = ref.watch(medicationFilterProvider);
+  final theme = Theme.of(context);
+  final l10n = AppLocalizations.of(context)!;
+  final currentUser = ref.watch(currentUserProvider).value;
+  final familyId = (currentUser != null && currentUser.families.isNotEmpty)
+    ? currentUser.families.first
+    : '';
 
-    return Scaffold(
+  return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
@@ -35,7 +39,7 @@ class MedicationListScreen extends ConsumerWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => const AddEditMedicationScreen(),
+                  builder: (context) => AddEditMedicationScreen(familyId: familyId),
                 ),
               );
             },
@@ -91,7 +95,7 @@ class MedicationListScreen extends ConsumerWidget {
                         data: (users) {
                           return Row(
                             children: users.map((user) {
-                              final isSelected = selectedUser == user &&
+                              final isSelected = selectedMember == user &&
                                   filter == MedicationFilter.user;
                               return TextButton(
                                 onPressed: () {
@@ -102,7 +106,7 @@ class MedicationListScreen extends ConsumerWidget {
                                       .state = MedicationFilter.user;
                                   ref
                                       .read(
-                                        selectedUserProvider.notifier,
+                                        selectedMemberProvider.notifier,
                                       )
                                       .state = user;
                                 },
@@ -152,6 +156,7 @@ class MedicationListScreen extends ConsumerWidget {
                             MaterialPageRoute(
                               builder: (context) => AddEditMedicationScreen(
                                 medication: medication,
+                                familyId: familyId,
                               ),
                             ),
                           );

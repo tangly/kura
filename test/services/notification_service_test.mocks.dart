@@ -37,10 +37,6 @@ import 'package:timezone/timezone.dart' as _i7;
 /// See the documentation for Mockito's code generation for more information.
 class MockFlutterLocalNotificationsPlugin extends _i1.Mock
     implements _i2.FlutterLocalNotificationsPlugin {
-  MockFlutterLocalNotificationsPlugin() {
-    _i1.throwOnMissingStub(this);
-  }
-
   @override
   _i3.Future<bool?> initialize(
     _i4.InitializationSettings? initializationSettings, {
@@ -60,6 +56,7 @@ class MockFlutterLocalNotificationsPlugin extends _i1.Mock
           },
         ),
         returnValue: _i3.Future<bool?>.value(),
+        returnValueForMissingStub: _i3.Future<bool?>.value(),
       ) as _i3.Future<bool?>);
 
   @override
@@ -70,6 +67,8 @@ class MockFlutterLocalNotificationsPlugin extends _i1.Mock
               [],
             ),
             returnValue: _i3.Future<_i5.NotificationAppLaunchDetails?>.value(),
+            returnValueForMissingStub:
+                _i3.Future<_i5.NotificationAppLaunchDetails?>.value(),
           ) as _i3.Future<_i5.NotificationAppLaunchDetails?>);
 
   @override
@@ -229,6 +228,9 @@ class MockFlutterLocalNotificationsPlugin extends _i1.Mock
             ),
             returnValue: _i3.Future<List<_i5.PendingNotificationRequest>>.value(
                 <_i5.PendingNotificationRequest>[]),
+            returnValueForMissingStub:
+                _i3.Future<List<_i5.PendingNotificationRequest>>.value(
+                    <_i5.PendingNotificationRequest>[]),
           ) as _i3.Future<List<_i5.PendingNotificationRequest>>);
 
   @override
@@ -240,5 +242,8 @@ class MockFlutterLocalNotificationsPlugin extends _i1.Mock
         ),
         returnValue: _i3.Future<List<_i5.ActiveNotification>>.value(
             <_i5.ActiveNotification>[]),
+        returnValueForMissingStub:
+            _i3.Future<List<_i5.ActiveNotification>>.value(
+                <_i5.ActiveNotification>[]),
       ) as _i3.Future<List<_i5.ActiveNotification>>);
 }
