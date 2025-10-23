@@ -70,8 +70,8 @@ class MedicationListScreen extends ConsumerWidget {
                     children: [
                       TextButton(
                         onPressed: () {
-                          ref.read(medicationFilterProvider.notifier).state =
-                              MedicationFilter.all;
+                          ref.read(medicationFilterProvider.notifier).setFilter(
+                              MedicationFilter.all);
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: filter == MedicationFilter.all
@@ -102,13 +102,13 @@ class MedicationListScreen extends ConsumerWidget {
                                   ref
                                       .read(
                                         medicationFilterProvider.notifier,
-                                      )
-                                      .state = MedicationFilter.user;
+                                      ).setFilter(MedicationFilter.user);
+                                      
                                   ref
                                       .read(
                                         selectedMemberProvider.notifier,
-                                      )
-                                      .state = user;
+                                      ).setMember(user);
+                                      
                                 },
                                 style: TextButton.styleFrom(
                                   backgroundColor: isSelected

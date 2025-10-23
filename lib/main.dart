@@ -4,13 +4,13 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kura/l10n/app_localizations.dart';
 import 'package:kura/src/router.dart';
-import 'package:kura/src/services/notification_service_impl.dart';
+import 'package:kura/src/services/notification_service.dart';
 import 'package:kura/src/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  final notificationService = NotificationServiceImpl(notificationsPlugin: FlutterLocalNotificationsPlugin());
+  final notificationService = NotificationService(notificationsPlugin: FlutterLocalNotificationsPlugin());
   await notificationService.init();
   print('App is about to run');
   runApp(const ProviderScope(child: MyApp()));

@@ -5,7 +5,6 @@ import 'package:kura/src/models/family_medication.dart';
 import 'package:kura/src/models/family_member.dart';
 import 'package:kura/src/providers.dart';
 import 'package:kura/src/theme.dart';
-import 'package:kura/src/models/app_user.dart';
 
 class MedicationCard extends ConsumerWidget {
   final FamilyMedication medication;

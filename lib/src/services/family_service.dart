@@ -46,9 +46,11 @@ class FamilyService extends FirestoreService<Family> {
     return _membersService(familyId).delete(memberId);
   }
 
-  Future<void> addFamilyMedication(String familyId, FamilyMedication medication) async {
-    await _medicationsService(familyId).create(medication);
+  Future<String> addFamilyMedication(String familyId, FamilyMedication medication) async {
+    return await _medicationsService(familyId).create(medication);
+
   }
+
   Future<FamilyMedication?> getFamilyMedication(String familyId, String medicationId) {
     return _medicationsService(familyId).get(medicationId);
   }

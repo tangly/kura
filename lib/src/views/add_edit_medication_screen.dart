@@ -68,6 +68,7 @@ class _AddEditMedicationScreenState
   }
 
   void _saveMedication() async {
+    
     if (_formKey.currentState!.validate()) {
       FamilyMedication medication = FamilyMedication(
         id: _medication?.id,
@@ -78,11 +79,12 @@ class _AddEditMedicationScreenState
         reason: _reasonController.text,
       );
       if (_medication?.id == null) {
-        await ref.read(familyServiceProvider).addFamilyMedication(widget.familyId,medication);
+        String id = await ref.read(familyServiceProvider).addFamilyMedication(widget.familyId,medication);
+        medication = medication.copyWith(id: id);
       } else {
         await ref.read(familyServiceProvider).updateFamilyMedication(widget.familyId, medication.id!, medication.toJson());
       }
-
+      
       final notificationService = ref.read(notificationServiceProvider);
       await notificationService.scheduleNotificationsForMedication(medication);
       //final _ = await ref.refresh(medicationListProvider.future);
@@ -115,7 +117,7 @@ class _AddEditMedicationScreenState
     if (confirmed == true) {
       await ref.read(notificationServiceProvider).cancelAllNotificationsForMedication(_medication!.id!);
       await ref.read(familyServiceProvider).deleteFamilyMedication(widget.familyId,_medication!.id!);
-      final _ = await ref.refresh(medicationListProvider.future);
+      //final _ = await ref.refresh(medicationListProvider.future);
       if (mounted) {
         Navigator.of(context).pop();
       }

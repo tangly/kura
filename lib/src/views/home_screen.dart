@@ -192,25 +192,22 @@ class _HomeView extends ConsumerWidget {
                                 final expiredCount = medications
                                     .where(
                                       (m) =>
-                                          m.expirationDate?.isBefore(
+                                          m.expirationDate.isBefore(
                                             DateTime.now(),
-                                          ) ??
-                                          false,
+                                          ),
                                     )
                                     .length;
                                 final expiringSoonCount = medications
                                     .where(
                                       (m) =>
-                                          (m.expirationDate?.isAfter(
+                                          (m.expirationDate.isAfter(
                                                 DateTime.now(),
-                                              ) ??
-                                              false) &&
-                                          (m.expirationDate?.isBefore(
+                                              )) &&
+                                          (m.expirationDate.isBefore(
                                                 DateTime.now().add(
                                                   const Duration(days: 30),
                                                 ),
-                                              ) ??
-                                              false),
+                                              )),
                                     )
                                     .length;
                                 return Column(
