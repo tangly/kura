@@ -8,9 +8,8 @@ import 'package:kura/src/widgets/multi_select_dialog.dart';
 
 class AddEditMedicationScreen extends ConsumerStatefulWidget {
   final FamilyMedication? medication;
-  final String familyId;
 
-  const AddEditMedicationScreen({super.key, this.medication, required this.familyId});
+  const AddEditMedicationScreen({super.key, this.medication});
 
   @override
   ConsumerState<AddEditMedicationScreen> createState() =>
@@ -79,10 +78,10 @@ class _AddEditMedicationScreenState
         reason: _reasonController.text,
       );
       if (_medication?.id == null) {
-        String id = await ref.read(familyServiceProvider).addFamilyMedication(widget.familyId,medication);
+        String id = await ref.read(familyMedicationServiceProvider).create(medication);
         medication = medication.copyWith(id: id);
       } else {
-        await ref.read(familyServiceProvider).updateFamilyMedication(widget.familyId, medication.id!, medication.toJson());
+        await ref.read(familyMedicationServiceProvider).update(medication.id!, medication.toJson());
       }
       
       final notificationService = ref.read(notificationServiceProvider);
@@ -116,7 +115,7 @@ class _AddEditMedicationScreenState
 
     if (confirmed == true) {
       await ref.read(notificationServiceProvider).cancelAllNotificationsForMedication(_medication!.id!);
-      await ref.read(familyServiceProvider).deleteFamilyMedication(widget.familyId,_medication!.id!);
+      await ref.read(familyMedicationServiceProvider).delete(_medication!.id!);
       //final _ = await ref.refresh(medicationListProvider.future);
       if (mounted) {
         Navigator.of(context).pop();

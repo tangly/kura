@@ -148,6 +148,12 @@ abstract class AppLocalizations {
   /// **'Family'**
   String get familyBottomBar;
 
+  /// No description provided for @prescriptionsBottomBar.
+  ///
+  /// In en, this message translates to:
+  /// **'Prescriptions'**
+  String get prescriptionsBottomBar;
+
   /// No description provided for @remindersBottomBar.
   ///
   /// In en, this message translates to:

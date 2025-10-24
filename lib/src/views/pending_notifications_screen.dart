@@ -18,8 +18,8 @@ class PendingNotificationsScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
         data: (data) {
-          final medications = data.$1;
-          final groupedNotifications = data.$2;
+          final medications = data.medications;
+          final groupedNotifications = data.groupedNotifications;
           
           final medicationsWithNotifications = medications
               .where((medication){

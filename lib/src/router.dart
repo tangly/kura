@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:kura/src/views/home_screen.dart';
 import 'package:kura/src/views/login_screen.dart';
+import 'package:kura/src/views/prescription_list_screen.dart';
+import 'package:kura/src/views/add_edit_prescription_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateChangesProvider);
@@ -33,6 +35,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/prescriptions',
+        builder: (context, state) => const PrescriptionListScreen(),
+      ),
+      GoRoute(
+        path: '/prescriptions/add-edit',
+        builder: (context, state) => AddEditPrescriptionScreen(memberId: state.extra as String),
       ),
     ],
   );

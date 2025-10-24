@@ -16,10 +16,6 @@ class MedicationListScreen extends ConsumerWidget {
   final filter = ref.watch(medicationFilterProvider);
   final theme = Theme.of(context);
   final l10n = AppLocalizations.of(context)!;
-  final currentUser = ref.watch(currentUserProvider).value;
-  final familyId = (currentUser != null && currentUser.families.isNotEmpty)
-    ? currentUser.families.first
-    : '';
 
   return Scaffold(
       backgroundColor: Colors.transparent,
@@ -39,7 +35,7 @@ class MedicationListScreen extends ConsumerWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => AddEditMedicationScreen(familyId: familyId),
+                  builder: (context) => const AddEditMedicationScreen(),
                 ),
               );
             },
@@ -156,7 +152,6 @@ class MedicationListScreen extends ConsumerWidget {
                             MaterialPageRoute(
                               builder: (context) => AddEditMedicationScreen(
                                 medication: medication,
-                                familyId: familyId,
                               ),
                             ),
                           );

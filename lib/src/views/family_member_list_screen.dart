@@ -10,7 +10,6 @@ class FamilyMemberListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final familyMembers = ref.watch(familyMembersProvider);
-    final currentUser = ref.watch(currentUserProvider);
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -30,8 +29,7 @@ class FamilyMemberListScreen extends ConsumerWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => AddEditFamilyMemberScreen(
-                      familyId: currentUser.value!.families.first),
+                  builder: (context) => const AddEditFamilyMemberScreen(),
                 ),
               );
             },
@@ -58,8 +56,7 @@ class FamilyMemberListScreen extends ConsumerWidget {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => AddEditFamilyMemberScreen(
-                            familyMember: member,
-                            familyId: currentUser.value!.families.first),
+                            familyMember: member),
                       ),
                     );
                   },

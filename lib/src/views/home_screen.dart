@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kura/l10n/app_localizations.dart';
 import 'package:kura/src/providers.dart';
 import 'package:kura/src/theme.dart';
 import 'package:kura/src/views/family_member_list_screen.dart';
 import 'package:kura/src/views/medication_list_screen.dart';
 import 'package:kura/src/views/pending_notifications_screen.dart';
+import 'package:kura/src/views/prescription_list_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -27,7 +29,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _HomeView(onNavigate: _onItemTapped),
       const MedicationListScreen(),
       const FamilyMemberListScreen(),
-      //const Scaffold(body: Center(child: Text('Reminders'))),
+      const PrescriptionListScreen(),
       //const Scaffold(body: Center(child: Text('Settings'))),
     ];
   }
@@ -123,11 +125,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 icon: const Icon(Icons.group),
                 label: l10n.familyBottomBar,
               ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.description),
+                label: 'Prescriptions',
+              ),
               /*BottomNavigationBarItem(
-            icon: const Icon(Icons.notifications),
-            label: l10n.remindersBottomBar,
-          ),
-          BottomNavigationBarItem(
             icon: const Icon(Icons.settings),
             label: l10n.settingsBottomBar,
           ),*/
@@ -262,18 +264,23 @@ class _HomeView extends ConsumerWidget {
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                '8:00 AM',
-                                style: theme.textTheme.headlineMedium!,
-                              ),
-                              const SizedBox(height: 8),
-                              const Text('Next Dose'),
-                            ],
+                      child: InkWell(
+                        onTap: () => context.push('/prescriptions'),
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  'Prescriptions',
+                                  style: theme.textTheme.titleMedium!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text('View and manage prescriptions'),
+                              ],
+                            ),
                           ),
                         ),
                       ),

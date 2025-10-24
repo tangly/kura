@@ -33,6 +33,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get familyBottomBar => 'Famille';
 
   @override
+  String get prescriptionsBottomBar => 'Prescriptions';
+
+  @override
   String get remindersBottomBar => 'Rappels';
 
   @override

@@ -7,6 +7,7 @@
   "homeBottomBar": "Home",
   "medicationsBottomBar": "Medications",
   "familyBottomBar": "Family",
+  "prescriptionsBottomBar": "Prescriptions",
   "remindersBottomBar": "Reminders",
   "settingsBottomBar": "Settings",
   "addMedication": "Add Medication",

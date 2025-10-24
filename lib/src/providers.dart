@@ -8,18 +8,51 @@ import 'package:kura/src/services/app_user_service.dart';
 import 'package:kura/src/services/family_service.dart';
 import 'package:kura/src/services/auth_service.dart';
 import 'package:kura/src/models/family_member.dart';
+import 'package:kura/src/services/family_member_prescription_service.dart';
+import 'package:kura/src/services/family_medication_service.dart';
+import 'package:kura/src/services/family_member_service.dart';
 import 'package:kura/src/tools/tools.dart';
+import 'package:kura/src/models/prescription.dart';
 
 // Providers for services
 final appUserServiceProvider = Provider<AppUserService>((ref) => AppUserService());
+
 final familyServiceProvider = Provider<FamilyService>((ref) => FamilyService());
+
 final notificationServiceProvider = Provider<NotificationService>((ref) =>
     NotificationService(notificationsPlugin: FlutterLocalNotificationsPlugin()));
+
 final authServiceProvider = Provider<AuthService>((ref) {
   final appUserService = ref.watch(appUserServiceProvider);
   final familyService = ref.watch(familyServiceProvider);
   return AuthService(FirebaseAuth.instance, appUserService, familyService);
 });
+
+final familyIdProvider = Provider<String>((ref) {
+  final currentUser = ref.watch(currentUserProvider).value;
+  return (currentUser != null && currentUser.families.isNotEmpty)
+      ? currentUser.families.first
+      : '';
+});
+
+final familyMemberServiceProvider = Provider<FamilyMemberService>((ref) {
+  final familyId = ref.watch(familyIdProvider);
+  return FamilyMemberService(familyId: familyId);
+});
+
+final familyMedicationServiceProvider = Provider<FamilyMedicationService>((ref) {
+  final familyId = ref.watch(familyIdProvider);
+  return FamilyMedicationService(familyId: familyId);
+});
+
+final familyMemberPrescriptionServiceProvider = Provider.family<
+    FamilyMemberPrescriptionService,
+    String>(
+  (ref, memberId) {
+    final familyId = ref.watch(familyIdProvider);
+    return FamilyMemberPrescriptionService(familyId: familyId, memberId: memberId);
+  },
+);
 
 // Auth state
 final authStateChangesProvider = StreamProvider<User?>(
@@ -37,13 +70,8 @@ final currentUserProvider = StreamProvider<AppUser?>((ref) {
 
 // Family members stream
 final familyMembersProvider = StreamProvider<List<FamilyMember>>((ref) {
-  final familyService = ref.watch(familyServiceProvider);
-  final currentUser = ref.watch(currentUserProvider);
-
-  if (currentUser.value != null && currentUser.value!.families.isNotEmpty) {
-    return familyService.getFamilyMembersStream(currentUser.value!.families.first);
-  }
-  return Stream.value([]);
+  final familyMemberService = ref.watch(familyMemberServiceProvider);
+  return familyMemberService.getListStream();
 });
 
 // Medication filter
@@ -54,26 +82,28 @@ class MedicationFilterNotifier extends Notifier<MedicationFilter> {
   MedicationFilter build() => MedicationFilter.all;
   void setFilter(MedicationFilter filter) => state = filter;
 }
-final medicationFilterProvider = NotifierProvider<MedicationFilterNotifier, MedicationFilter>(MedicationFilterNotifier.new);
+
+final medicationFilterProvider =
+    NotifierProvider<MedicationFilterNotifier, MedicationFilter>(
+        MedicationFilterNotifier.new);
 
 class SelectedMemberNotifier extends Notifier<FamilyMember?> {
   @override
   FamilyMember? build() => null;
   void setMember(FamilyMember? member) => state = member;
 }
-final selectedMemberProvider = NotifierProvider<SelectedMemberNotifier, FamilyMember?>(SelectedMemberNotifier.new);
+
+final selectedMemberProvider =
+    NotifierProvider<SelectedMemberNotifier, FamilyMember?>(
+        SelectedMemberNotifier.new);
 
 // Medication list stream
 final medicationListProvider = StreamProvider<List<FamilyMedication>>((ref) {
-  final familyService = ref.watch(familyServiceProvider);
+  final familyMedicationService = ref.watch(familyMedicationServiceProvider);
   final filter = ref.watch(medicationFilterProvider);
   final selectedMember = ref.watch(selectedMemberProvider);
-  final currentUser = ref.watch(currentUserProvider).value;
-  final familyId = (currentUser != null && currentUser.families.isNotEmpty)
-      ? currentUser.families.first
-      : '';
 
-  return familyService.getFamilyMedicationsStream(familyId).map((medications) {
+  return familyMedicationService.getListStream().map((medications) {
     medications.sort((a, b) => a.expirationDate.compareTo(b.expirationDate));
     switch (filter) {
       case MedicationFilter.all:
@@ -83,15 +113,29 @@ final medicationListProvider = StreamProvider<List<FamilyMedication>>((ref) {
           return medications;
         } else {
           return medications
-              .where((medication) => medication.members != null && medication.members!.contains(selectedMember.id))
+              .where((medication) =>
+                  medication.members != null &&
+                  medication.members!.contains(selectedMember.id))
               .toList();
         }
     }
   });
 });
 
+// Prescription list stream
+final prescriptionListProvider = StreamProvider.family<List<Prescription>, String>((ref, memberId) {
+  final prescriptionService = ref.watch(familyMemberPrescriptionServiceProvider(memberId));
+  return prescriptionService.getListStream();
+});
+
 // Pending notifications provider
-final pendingNotificationsProvider = FutureProvider<(List<FamilyMedication>, Map<int, List<PendingNotificationRequest>>)>((ref) async {
+class PendingNotificationsData {
+  final List<FamilyMedication> medications;
+  final Map<int, List<PendingNotificationRequest>> groupedNotifications;
+  PendingNotificationsData(this.medications, this.groupedNotifications);
+}
+
+final pendingNotificationsProvider = FutureProvider<PendingNotificationsData>((ref) async {
   final medications = await ref.watch(medicationListProvider.future);
   final notificationService = ref.watch(notificationServiceProvider);
   final pendingNotifications = await notificationService.getPendingNotifications();
@@ -106,8 +150,5 @@ final pendingNotificationsProvider = FutureProvider<(List<FamilyMedication>, Map
     }
   }
 
-  return (medications, groupedNotifications);
+  return PendingNotificationsData(medications, groupedNotifications);
 });
-
-// Removed: userListProvider (not used in your logic)
-// Removed: flutter_riverpod/legacy.dart import (not needed)

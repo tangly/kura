@@ -7,10 +7,9 @@ import 'package:kura/src/providers.dart';
 
 class AddEditFamilyMemberScreen extends ConsumerStatefulWidget {
   final FamilyMember? familyMember;
-  final String familyId;
 
   const AddEditFamilyMemberScreen(
-      {super.key, this.familyMember, required this.familyId});
+      {super.key, this.familyMember});
 
   @override
   ConsumerState<AddEditFamilyMemberScreen> createState() =>
@@ -55,7 +54,7 @@ class _AddEditFamilyMemberScreenState
 
   void _saveUser() async {
     if (_formKey.currentState!.validate()) {
-      final familyService = ref.read(familyServiceProvider);
+      final familyMemberService = ref.read(familyMemberServiceProvider);
       final currentUser = ref.read(authServiceProvider).firebaseAuth.currentUser;
       final member = FamilyMember(
         id: _familyMember?.id ?? '',
@@ -67,10 +66,9 @@ class _AddEditFamilyMemberScreenState
         createdBy: _familyMember?.createdBy ?? currentUser!.uid,
       );
       if (_familyMember == null) {
-        await familyService.addFamilyMember(widget.familyId, member);
+        await familyMemberService.create(member);
       } else {
-        await familyService.updateFamilyMember(
-            widget.familyId, _familyMember!.id, member.toJson());
+        await familyMemberService.update(_familyMember!.id, member.toJson());
       }
 
       // final _ = await ref.refresh(userListProvider.future);
@@ -101,9 +99,8 @@ class _AddEditFamilyMemberScreenState
     );
 
     if (confirmed == true) {
-      final familyService = ref.read(familyServiceProvider);
-      await familyService.deleteFamilyMember(
-          widget.familyId, _familyMember!.id);
+      final familyMemberService = ref.read(familyMemberServiceProvider);
+      await familyMemberService.delete(_familyMember!.id);
       // final _ = await ref.refresh(userListProvider.future);
       if (mounted) {
         Navigator.of(context).pop();
